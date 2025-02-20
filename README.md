@@ -1,4 +1,4 @@
-# Electron.JS Setup `v1.3`
+# Electron.JS Setup `v1.4`
 Welcome to **Electron.JS Setup**, a powerful and easy-to-use script designed to quickly set up your Electron.js projects. Whether you're a beginner or an experienced developer, this script will streamline the process of creating a new Electron app from scratch.
 
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/home.png)
