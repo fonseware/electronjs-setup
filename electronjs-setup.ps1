@@ -20,6 +20,7 @@
 
 $host.UI.RawUI.WindowTitle = "Electron.JS Setup"
 $host.UI.RawUI.ForegroundColor = "White"
+$varVersion = "1.4"
 Clear-Host
 
 function functionDrawLogo {
@@ -31,7 +32,7 @@ function functionDrawLogo {
  / _ \ |/ _ \/ __| __| '__/ _ \| '_ \   | / __| / __|/ _ \ __| | | | '_ \ 
 |  __/ |  __/ (__| |_| | | (_) | | | |_ | \__ \ \__ \  __/ |_| |_| | |_) |
  \___|_|\___|\___|\__|_|  \___/|_| |_(_)/ |___/ |___/\___|\__|\__,_| .__/ 
-                                      |__/                         |_|    v1.3
+                                      |__/                         |_|    $varVersion
 _______________________________________________________________________________
 
 "@ -ForegroundColor Green
