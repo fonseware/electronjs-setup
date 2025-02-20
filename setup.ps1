@@ -102,7 +102,7 @@ function Compare-Versions {
     $localVersion = Get-LocalVersion
     $remoteVersion = Get-RemoteVersion
 
-    if ($localVersion -eq $null -or $remoteVersion -eq $null) {
+    if ($null -eq $localVersion -or $null -eq $remoteVersion) {
         Write-Host "Could not compare versions. Ensure both files are accessible." -ForegroundColor Red
         return
     }
