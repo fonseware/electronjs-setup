@@ -20,7 +20,7 @@
 
 $host.UI.RawUI.WindowTitle = "Electron.JS Setup"
 $host.UI.RawUI.ForegroundColor = "White"
-$varVersion = "1.4"
+$varVersion = "1.5"
 Clear-Host
 
 function functionDrawLogo {
@@ -133,7 +133,8 @@ function functionCreateElectronAppDefault {
             $projectName = $projectName -replace ' ', '-'
         }
         else {
-            Write-Host "Error: Project name cannot be empty. Please try again." -ForegroundColor Red
+            Write-Host "Error: Project name cannot be empty. Please try again.`nYou will be taken to the main menu..." -ForegroundColor Red
+            return
         }
     } while ([string]::IsNullOrWhiteSpace($projectName))
     do {
@@ -154,16 +155,15 @@ function functionCreateElectronAppDefault {
     Write-Host "Review your project settings..." -ForegroundColor Yellow
     Write-Host "Project Name: $projectName"
     Write-Host "Save Location: $projectLocation\"
-    Write-Host "Project Location: $projectLocation\$projectName" -ForegroundColor Yellow
+    Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
     functionDrawLine
     Write-Host "`nPress [Enter] to continue or type '1' to start over..."
     $inputValue = Read-Host "Enter your choice"
     if ($inputValue -eq "1") {
-        Write-Host "`nOkay, exiting script..." -ForegroundColor Yellow
         return
     } 
     if ($inputValue -eq "") {} else {
-        Write-Host "`nInvalid input.... Exiting script" -ForegroundColor Red
+        Write-Host "`nInvalid input.... You will be taken to the main menu..." -ForegroundColor Red
         return
     }
     functionDrawLogo
@@ -252,13 +252,13 @@ app.on('window-all-closed', () => {`
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElectronJS App</title>
+    <title>Electron.JS App</title>
 </head>
 <body>
     <h1>Hello from Electron!</h1>
-    <h2>Congratulations on setting up ElectronJS on VS Code.</h2>
+    <h2>Congratulations on setting up Electron.JS on VS Code.</h2>
     <p>Welcome to your Electron app. Edit the index.html file and start creating, your dream project!</p>
-    <p>This file was created from the ElectronJS Setup script. Thank you and tell a friend about this script.</p>
+    <p>This file was created from the Electron.JS Setup script. Thank you and tell a friend about this script.</p>
 </body>
 </html>
 "@
@@ -320,7 +320,7 @@ app.on('window-all-closed', () => {`
     Write-Host "[*] Step 7: Opening project in Visual Studio Code"-ForegroundColor Green
     Write-Host "[*] Step 8: Building Electron app"-ForegroundColor Green
     write-host "`nYour Electron app has been created successfully!" -ForegroundColor Green
-    write-host "`nThank you for using the ElectronJS Setup script." -ForegroundColor Green
+    write-host "`nThank you for using the Electron.JS Setup script." -ForegroundColor Green
 }
 
 function functionCreateElectronAppVite {
@@ -330,7 +330,7 @@ function functionCreateElectronAppVite {
 
 function functionAboutScript {
     functionDrawLogo
-    Write-Host "About this script" -ForegroundColor Cyan
+    Write-Host "About this script`nScript version: $varVersion`n" -ForegroundColor Cyan
     Write-Host " * This script is designed to help you create a new Electron.JS app with ease." -ForegroundColor Yellow
     Write-Host " * It will guide you through the process of setting up a new Electron app." -ForegroundColor Yellow
     Write-Host " * The script will check for prerequisites and install them if needed." -ForegroundColor Yellow
@@ -338,7 +338,7 @@ function functionAboutScript {
     Write-Host " * You can also create a new Electron app with Vite, a faster and more efficient way to create apps." -ForegroundColor Yellow
     Write-Host @"
     `nSoftware License Agreement
-    ElectronJS Setup is licensed under the MIT License.
+    Electron.JS Setup is licensed under the MIT License.
     By using this script, you agree to the following terms:
         1. You may use this script for personal or commercial projects.
         2. You may modify the script as needed.
