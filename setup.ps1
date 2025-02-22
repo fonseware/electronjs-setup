@@ -190,7 +190,7 @@ By continuing, you agree to install these prerequisites on your system.
  - Node.js: https://github.com/nodejs/node/blob/main/LICENSE
 "@ -ForegroundColor Yellow
   functionDrawLine
-  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu, to start over..."
+  Write-Host "`nPress [Enter] to accept and continue or type '1' to go to main menu."
   $inputValue = Read-Host "Enter your choice"
   if ($inputValue -eq "1") {
     return
@@ -215,11 +215,93 @@ By continuing, you agree to install these prerequisites on your system.
     Write-Host "`nChocolatey is already installed." -ForegroundColor Green
   }
   Start-Sleep -Seconds 1
+
   functionDrawLogo
   Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
   Write-Host "[*] Chocolatey"-ForegroundColor Green
   Write-Host "[-] Node.js"-ForegroundColor Yellow
   Write-Host "[ ] Visual Studio Code"-ForegroundColor DarkGray
+  ##
+  function Install-NvmIfNeeded {
+    if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
+      Write-Host "NVM is not installed. Installing via Chocolatey..." -ForegroundColor Yellow
+      choco install nvm -y
+      # Refresh environment variables
+      $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    }
+  }
+
+  function Install-NodeJsWithOptions {
+    param([bool]$nodeAlreadyInstalled)
+
+    # Prompt if Node.js is already installed
+    if ($nodeAlreadyInstalled) {
+      Write-Host "`nNode.js is already installed." -ForegroundColor Green
+      $installAnother = Read-Host "Do you want to install another version of node.js? (Y/N)"
+      if ($installAnother -notmatch '^[Yy]') { return }
+    }
+
+    # Installation options menu
+    functionDrawLine
+    Write-Host "Choose Node.js installation method:`n" -ForegroundColor Yellow
+    Write-Host "1. Install latest version via Chocolatey" -ForegroundColor Cyan
+    Write-Host "2. Install latest version using NVM" -ForegroundColor Cyan
+    Write-Host "3. Choose specific version with NVM" -ForegroundColor Cyan
+    Write-Host "4. Skip Node.js installation" -ForegroundColor Cyan
+    $choice = Read-Host "Enter your choice (1-4)"
+
+    switch ($choice) {
+      '1' {
+        Write-Host "`nInstalling Node.js via Chocolatey..." -ForegroundColor Yellow
+        choco install nodejs -y
+      }
+      '2' {
+        Install-NvmIfNeeded
+        Write-Host "`nInstalling latest Node.js via NVM..." -ForegroundColor Yellow
+        nvm install latest
+        nvm use latest
+      }
+      '3' {
+        Install-NvmIfNeeded
+        $version = Read-Host "`nEnter the Node.js version (e.g., 20.13.1)"
+        Write-Host "`,Installing Node.js $version via NVM..." -ForegroundColor Yellow
+        nvm install $version
+        nvm use $version
+      }
+      '4' { 
+        Write-Host "`nSkipping installation." -ForegroundColor Yellow 
+        return 
+      }
+      default { 
+        Write-Host "`nInvalid choice. Skipping." -ForegroundColor Red 
+        return 
+      }
+    }
+
+    # Verify installation
+    if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+      Write-Host "`nNode.js installation failed!" -ForegroundColor Red
+    }
+  }
+
+  # Check if Node.js is already installed
+  $nodeInstalled = [bool](Get-Command node -ErrorAction SilentlyContinue)
+  
+  # Run installation menu
+  Install-NodeJsWithOptions -nodeAlreadyInstalled $nodeInstalled
+
+  # Final check
+  if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+    Write-Host "`nNode.js is still missing. Some features may not work." -ForegroundColor Red
+    Start-Sleep -Seconds 2
+  }
+  ##
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
+  Write-Host "[*] Chocolatey"-ForegroundColor Green
+  Write-Host "[*] Node.js"-ForegroundColor Green
+  Write-Host "[-] Visual Studio Code"-ForegroundColor Yellow
 
   $vsCodePath = Get-Command 'code' -ErrorAction SilentlyContinue
   if (-not $vsCodePath) {
@@ -228,22 +310,6 @@ By continuing, you agree to install these prerequisites on your system.
   }
   else {
     Write-Host "`nVisual Studio Code is already installed." -ForegroundColor Green
-  }
-
-  Start-Sleep -Seconds 1
-  functionDrawLogo
-  Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
-  Write-Host "[*] Chocolatey"-ForegroundColor Green
-  Write-Host "[*] Node.js"-ForegroundColor Green
-  Write-Host "[-] Visual Studio Code"-ForegroundColor Yellow
-
-  $nodePath = Get-Command 'node' -ErrorAction SilentlyContinue
-  if (-not $nodePath) {
-    Write-Host "`nNode.js is not installed. Installing Node.js..." -ForegroundColor Yellow
-    choco install nodejs -y
-  }
-  else {
-    Write-Host "`nNode.js is already installed." -ForegroundColor Green
   }
 
   Start-Sleep -Seconds 1
@@ -397,17 +463,56 @@ app.on('window-all-closed', () => {`
   $htmlContent = @"
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electron.js App</title>
-</head>
-<body>
-    <h1>Hello from Electron!</h1>
-    <h2>Congratulations on setting up Electron.js on VS Code.</h2>
-    <p>Welcome to your Electron app. Edit the index.html file and start creating, your dream project!</p>
-    <p>This file was created from the Electron.js Setup script. Thank you and tell a friend about this script.</p>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electron Starter App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 40px;
+        background-color: #f0f0f0;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #2e3c4d;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+      }
+      h2 {
+        color: #3a506b;
+        margin-bottom: 30px;
+      }
+      p {
+        color: #555;
+        line-height: 1.6;
+        margin: 15px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Welcome to Electron!</h1>
+      <h2>You've successfully set up your Electron application</h2>
+
+      <p>
+        Start building your application by modifying the
+        <code>index.html</code> file and adding your custom functionality.
+      </p>
+      <p>
+        This basic template includes everything you need to begin developing
+        your cross-platform desktop app.
+      </p>
+      <p>
+        Check out the Electron documentation to explore all the powerful
+        features available!
+      </p>
+    </div>
+  </body>
 </html>
 "@
   Set-Content -Path (Join-Path -Path $fullPath -ChildPath "index.html") -Value $htmlContent
@@ -654,42 +759,86 @@ ipcMain.on('close-window', () => {
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World! $projectName</title>
+    <title>Electron Modern Home</title>
     <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   </head>
   <body>
     <header id="titlebar">
       <div id="drag-region">
         <div id="window-title">
-          <span>Electron quick start</span>
+          <span>Electron Modern Home</span>
         </div>
 
         <div id="window-controls">
           <div class="button" id="min-button">
             <img
               class="icon"
-              srcset="icons/min-w-10.png 1x, icons/min-w-12.png 1.25x, icons/min-w-15.png 1.5x, icons/min-w-15.png 1.75x, icons/min-w-20.png 2x, icons/min-w-20.png 2.25x, icons/min-w-24.png 2.5x, icons/min-w-30.png 3x, icons/min-w-30.png 3.5x"
+              srcset="
+                icons/min-w-10.png 1x,
+                icons/min-w-12.png 1.25x,
+                icons/min-w-15.png 1.5x,
+                icons/min-w-15.png 1.75x,
+                icons/min-w-20.png 2x,
+                icons/min-w-20.png 2.25x,
+                icons/min-w-24.png 2.5x,
+                icons/min-w-30.png 3x,
+                icons/min-w-30.png 3.5x
+              "
               draggable="false"
             />
           </div>
           <div class="button" id="max-button">
             <img
               class="icon"
-              srcset="icons/max-w-10.png 1x, icons/max-w-12.png 1.25x, icons/max-w-15.png 1.5x, icons/max-w-15.png 1.75x, icons/max-w-20.png 2x, icons/max-w-20.png 2.25x, icons/max-w-24.png 2.5x, icons/max-w-30.png 3x, icons/max-w-30.png 3.5x"
+              srcset="
+                icons/max-w-10.png 1x,
+                icons/max-w-12.png 1.25x,
+                icons/max-w-15.png 1.5x,
+                icons/max-w-15.png 1.75x,
+                icons/max-w-20.png 2x,
+                icons/max-w-20.png 2.25x,
+                icons/max-w-24.png 2.5x,
+                icons/max-w-30.png 3x,
+                icons/max-w-30.png 3.5x
+              "
               draggable="false"
             />
           </div>
           <div class="button" id="restore-button">
             <img
               class="icon"
-              srcset="icons/restore-w-10.png 1x, icons/restore-w-12.png 1.25x, icons/restore-w-15.png 1.5x, icons/restore-w-15.png 1.75x, icons/restore-w-20.png 2x, icons/restore-w-20.png 2.25x, icons/restore-w-24.png 2.5x, icons/restore-w-30.png 3x, icons/restore-w-30.png 3.5x"
+              srcset="
+                icons/restore-w-10.png 1x,
+                icons/restore-w-12.png 1.25x,
+                icons/restore-w-15.png 1.5x,
+                icons/restore-w-15.png 1.75x,
+                icons/restore-w-20.png 2x,
+                icons/restore-w-20.png 2.25x,
+                icons/restore-w-24.png 2.5x,
+                icons/restore-w-30.png 3x,
+                icons/restore-w-30.png 3.5x
+              "
               draggable="false"
             />
           </div>
           <div class="button" id="close-button">
             <img
               class="icon"
-              srcset="icons/close-w-10.png 1x, icons/close-w-12.png 1.25x, icons/close-w-15.png 1.5x, icons/close-w-15.png 1.75x, icons/close-w-20.png 2x, icons/close-w-20.png 2.25x, icons/close-w-24.png 2.5x, icons/close-w-30.png 3x, icons/close-w-30.png 3.5x"
+              srcset="
+                icons/close-w-10.png 1x,
+                icons/close-w-12.png 1.25x,
+                icons/close-w-15.png 1.5x,
+                icons/close-w-15.png 1.75x,
+                icons/close-w-20.png 2x,
+                icons/close-w-20.png 2.25x,
+                icons/close-w-24.png 2.5x,
+                icons/close-w-30.png 3x,
+                icons/close-w-30.png 3.5x
+              "
               draggable="false"
             />
           </div>
@@ -698,11 +847,77 @@ ipcMain.on('close-window', () => {
     </header>
 
     <div id="main">
-      <h1>Hello World!</h1>
-      <p>Electron version: <span id="electron-ver"></span></p>
-      <p>
-      Welcome to your new project, $projectName. This is a fork of this project from GitHub <a href="https://github.com/binaryfunt/electron-seamless-titlebar-tutorial">Visit Electron Seamless Titlebar Tutorial. This part of the project is created using the Electron.JS Setup. Tell a friend about this script. For any issues please submit them on the project page.</a>
-      </p>
+      <section class="hero">
+        <div class="hero-content">
+          <h1 class="gradient-text">Welcome to Electron.js</h1>
+          <p class="hero-subtitle">
+            Build cross-platform apps with elegance and speed. 
+            This demo project is made using the Electron.js script. Tell a friend about this script.
+          </p>
+          <a
+            href="https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app"
+          >
+            <button class="cta-button">
+              Get Started <i class="fas fa-arrow-right"></i>
+            </button>
+          </a>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="feature-card">
+          <i class="fas fa-bolt feature-icon"></i>
+          <h3>Lightning Fast</h3>
+          <p>
+            Harness the power of Electron's optimized architecture for seamless
+            performance.
+          </p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-paint-brush feature-icon"></i>
+          <h3>Beautiful UI</h3>
+          <p>
+            Create stunning interfaces with our modern design system and CSS
+            framework.
+          </p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-code feature-icon"></i>
+          <h3>Easy Development</h3>
+          <p>
+            Full TypeScript support and intuitive API for rapid application
+            development.
+          </p>
+        </div>
+      </section>
+
+      <section class="info-section">
+        <h2>Start Your Journey</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="card-header">
+              <i class="fas fa-book-open"></i>
+              <h4>Documentation</h4>
+            </div>
+            <p>Explore our comprehensive guides and API references.</p>
+            <a href="https://www.electronjs.org/docs/latest" class="card-link"
+              >Read More <i class="fas fa-external-link-alt"></i
+            ></a>
+          </div>
+          <div class="info-card">
+            <div class="card-header">
+              <i class="fas fa-download"></i>
+              <h4>Installation</h4>
+            </div>
+            <p>Get started with our simple setup process and CLI tools.</p>
+            <a
+              href="https://github.com/electron/electron/releases"
+              class="card-link"
+              >Download Now <i class="fas fa-download"></i
+            ></a>
+          </div>
+        </div>
+      </section>
     </div>
 
     <script src="renderer.js"></script>
@@ -713,15 +928,30 @@ ipcMain.on('close-window', () => {
   Start-Sleep -Seconds 1
   $cssContent = @"
 /* Basic styling */
-* {margin: 0; padding: 0; border: 0; vertical-align: baseline;}
-html {box-sizing: border-box;}
-*, *:before, *:after {box-sizing: inherit;}
-html, body {height: 100%; margin: 0;}
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
 
 body {
   font-family: "Segoe UI", sans-serif;
-  background: #1A2933;
-  color: #FFF;
+  background: #1a2933;
+  color: #fff;
 }
 
 h1 {
@@ -732,7 +962,7 @@ h1 {
 
 p {
   margin-top: 10px;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 /* Styling of window frame and titlebar */
@@ -771,7 +1001,7 @@ body {
 }
 
 #titlebar {
-  color: #FFF;
+  color: #fff;
 }
 
 #titlebar #drag-region {
@@ -822,9 +1052,12 @@ body {
   height: 100%;
 }
 
-@media (-webkit-device-pixel-ratio: 1.5), (device-pixel-ratio: 1.5),
-(-webkit-device-pixel-ratio: 2), (device-pixel-ratio: 2),
-(-webkit-device-pixel-ratio: 3), (device-pixel-ratio: 3) {
+@media (-webkit-device-pixel-ratio: 1.5),
+  (device-pixel-ratio: 1.5),
+  (-webkit-device-pixel-ratio: 2),
+  (device-pixel-ratio: 2),
+  (-webkit-device-pixel-ratio: 3),
+  (device-pixel-ratio: 3) {
   #window-controls .icon {
     width: 10px;
     height: 10px;
@@ -836,19 +1069,19 @@ body {
 }
 
 #window-controls .button:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 #window-controls .button:active {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 #close-button:hover {
-  background: #E81123 !important;
+  background: #e81123 !important;
 }
 
 #close-button:active {
-  background: #F1707A !important;
+  background: #f1707a !important;
 }
 #close-button:active .icon {
   filter: invert(1);
@@ -857,7 +1090,8 @@ body {
 #min-button {
   grid-column: 1;
 }
-#max-button, #restore-button {
+#max-button,
+#restore-button {
   grid-column: 2;
 }
 #close-button {
@@ -874,6 +1108,146 @@ body {
 
 .maximized #max-button {
   display: none;
+}
+
+#main {
+  background: linear-gradient(45deg, #0f2027, #203a43, #2c5364);
+}
+
+.hero {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  margin: 2rem 0;
+  animation: fadeIn 1s ease-out;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 15px;
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  color: #4facfe;
+  margin-bottom: 1rem;
+}
+
+.cta-button {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.cta-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.info-section {
+  margin-top: 4rem;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 1rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-left: 4px solid #4facfe;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-link {
+  color: #4facfe;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.card-link:hover {
+  color: #00f2fe;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .features,
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 2rem 1rem;
+  }
 }
 "@
   Set-Content -Path (Join-Path -Path $fullPath -ChildPath "style.css") -Value $cssContent
