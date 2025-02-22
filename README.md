@@ -1,42 +1,57 @@
-# Electron.JS Setup `v1.6`
-Welcome to **Electron.JS Setup**, a powerful and easy-to-use script designed to quickly set up your Electron.js projects. Whether you're a beginner or an experienced developer, this script will streamline the process of creating a new Electron app from scratch.
+# Electron.js Setup Script `v1.7`
+This PowerShell script is designed to simplify the process of setting up and creating new Electron.js projects. Whether you're a beginner or an experienced developer, this script automates the installation of essential tools, initializes your project, and generates the necessary files to get you started quickly. It also provides options to create different types of Electron apps, including a basic Electron app, a Vite-based app, and a Windows-style app.
+![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-home.png)
 
-![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/home.png)
+<p align="center">
+  The homepage of the Electron.js Setup script.
+</p>
+![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-setup.png)
+<p align="center">
+  A screenshot of the a basic electron app creation.
+</p>
+![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-created.png)
+<p align="center">
+  A screenshot of the basic electron app created.
+</p>
+![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-windows.png)
+<p align="center">
+  A screenshot of a windows styled electron app.
+</p>
 
 ## Features
-- No need to manually configure your project. Just answer a few simple prompts, and the script does the rest.
-- It automatically checks and installs essential tools such as Chocolatey, Visual Studio Code, and Node.js.
-- It creates a new Electron project directory, sets up npm, installs Electron, and generates the essential files (like `main.js` and `index.html`).
-- Once your project is set up, the script opens it directly in Visual Studio Code, so you can start coding right away.
-- From initializing your project to launching the app, the script takes care of every step, so you don't have to.
 
-![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/setup.png)
-
-![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/created.png)
+- Automatic Prerequisite Installation: The script checks for and installs essential tools like Chocolatey, Node.js, and Visual Studio Code if they are not already installed on your system.
+- Project Initialization: Automatically creates a new Electron.js project directory, initializes npm, and installs Electron as a dependency.
+- File Generation: Generates essential files such as main.js, index.html, and package.json with default configurations, saving you time on boilerplate code.
+- Multiple Project Templates:
+  - Basic Electron App: Creates a simple Electron app with default settings.
+  - Vite-based Electron App: Uses the npm create @quick-start/electron command to set up a Vite-based Electron app for faster development.
+  - Windows-style Electron App: Creates a modern Windows 10/11-style Electron app with custom window controls and a sleek UI.
+- Visual Studio Code Integration: Automatically opens the newly created project in Visual Studio Code, allowing you to start coding immediately.
+- Version Check: The script checks for updates by comparing the local version with the remote version on GitHub, ensuring you are using the latest version of the script.
+- Error Handling: Provides error logging and user-friendly prompts to guide you through the setup process, even if something goes wrong.
 
 ## Running the Setup
->[!CAUTION]
-> This script was just released, there may be bugs when using this script. Please report any bugs in the issues page.
-
->[!WARNING]
->Close the script after installing certain prerequisites and restart your computer.
 
 After cloning the repository, navigate to the project folder in your terminal and run the setup script to automatically configure your environment:
-
 **For Windows**: Run `setup.ps1` in Command Prompt (requires Git installed):
+
 ```cmd
 git clone https://github.com/fonseware/electronjs-setup.git
 cd electronjs-setup
 powershell -ExecutionPolicy Bypass -File setup.ps1
-
 ```
+
 **For Windows**: Run `setup.ps1` in PowerShell (requires Git installed):
+
 ```powershell
 git clone https://github.com/fonseware/electronjs-setup.git
 cd electronjs-setup
 ./setup.ps1
 ```
+
 **Alternative method**:
+
 ```
 Download from the button above,
 Extract the contents on your computer,
@@ -44,7 +59,14 @@ Run setup.ps1 on PowerShell.
 ```
 
 ## License
-This project is under the MIT License - see the [LICENSE](https://raw.githubusercontent.com/fonseware/electronjs-setup/refs/heads/main/LICENSE) file for details.
 
-## Support
-For any issues or improvements, submit them on GitHub issues or contact @shannonfonseka
+This script is licensed under the MIT License. Feel free to use, modify, and distribute it as per the terms of the license. For more details, see the [LICENSE](https://raw.githubusercontent.com/fonseware/electronjs-setup/refs/heads/main/LICENSE) file.
+
+## Contributing
+
+Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request on the GitHub repository.
+
+## Author
+
+This script is developed and maintained by [shannonfonseka](https://github.com/shannonfonseka).
+This script is designed to make Electron.js development more accessible and efficient, allowing you to focus on building your application rather than setting up the environment. Give it a try and let us know your feedback!
