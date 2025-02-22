@@ -20,14 +20,13 @@
 
 $host.UI.RawUI.WindowTitle = "Electron.js Setup"
 $host.UI.RawUI.ForegroundColor = "White"
-$varVersion = "1.6"
 $currentFolder = $PSScriptRoot
 Clear-Host
 
 function functionDrawLogo2 {
-    Clear-Host
-    # https://www.asciiart.eu/text-to-ascii-art
-    Write-Host @"
+  Clear-Host
+  # https://www.asciiart.eu/text-to-ascii-art
+  Write-Host @"
       _           _                      _                _               
   ___| | ___  ___| |_ _ __ ___  _ __    (_)___   ___  ___| |_ _   _ _ __  
  / _ \ |/ _ \/ __| __| '__/ _ \| '_ \   | / __| / __|/ _ \ __| | | | '_ \ 
@@ -38,12 +37,37 @@ _____________________[  WELCOME TO ELECTRON.JS SETUP  ]________________________`
 "@ -ForegroundColor Green
 }
 
-function functionDrawLine2 {
-    Write-Host "_______________________________________________________________________________" -ForegroundColor Yellow
+function functionDrawLogo {
+  Clear-Host
+  # https://www.asciiart.eu/text-to-ascii-art
+  Write-Host @"
+      _           _                      _                _               
+  ___| | ___  ___| |_ _ __ ___  _ __    (_)___   ___  ___| |_ _   _ _ __  
+ / _ \ |/ _ \/ __| __| '__/ _ \| '_ \   | / __| / __|/ _ \ __| | | | '_ \ 
+|  __/ |  __/ (__| |_| | | (_) | | | |_ | \__ \ \__ \  __/ |_| |_| | |_) |
+ \___|_|\___|\___|\__|_|  \___/|_| |_(_)/ |___/ |___/\___|\__|\__,_| .__/ 
+                                      |__/                         |_|   v$localVersion
+_______________________________________________________________________________`n
+"@ -ForegroundColor Green
+}
+
+function functionDrawLine {
+  Write-Host "_______________________________________________________________________________" -ForegroundColor Yellow
+}
+
+function Test-InternetConnection {
+  try {
+    $url = "https://www.google.com"
+    $response = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing -TimeoutSec 5
+    return $true
+  }
+  catch {
+    return $false
+  }
 }
 
 function functionShowInfoScreen {
-    Write-Host @"
+  Write-Host @"
 A powerful and easy-to-use script designed to quickly set up your Electron.js
 projects. Whether you're a beginner or an experienced developer, this script 
 will streamline the process of creating a new Electron app from scratch.`n
@@ -58,7 +82,7 @@ Code, so you can start coding right away.`n
 * From initializing your project to launching the app, the script takes care 
 of every step, so you don't have to.`n
 "@ -ForegroundColor Cyan
-    functionDrawLine2
+  functionDrawLine
 }
 
 # Path to the local version.txt file in the repo
@@ -69,259 +93,242 @@ $remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setu
 
 # Function to get the local version from version.txt
 function Get-LocalVersion {
-    if (Test-Path $localVersionFilePath) {
-        return Get-Content $localVersionFilePath | Out-String
-    }
-    else {
-        Clear-Host
-        functionDrawLogo2
-        Write-Host "Local version file not found." -ForegroundColor Red
-        return $null
-    }
+  if (Test-Path $localVersionFilePath) {
+    return Get-Content $localVersionFilePath | Out-String
+  }
+  else {
+    Clear-Host
+    functionDrawLogo2
+    Write-Host "Local version file not found." -ForegroundColor Red
+    Start-Sleep -Seconds 1
+    return $null
+  }
 }
 
 # Function to get the remote version from GitHub
 function Get-RemoteVersion {
-    try {
-        $response = Invoke-WebRequest -Uri $remoteVersionUrl -Method Get
-        return $response.Content
-    }
-    catch {
-        Clear-Host
-        functionDrawLogo2
-        Write-Host "Failed to fetch the remote version from GitHub." -ForegroundColor Red
-        return $null
-    }
+  try {
+    $response = Invoke-WebRequest -Uri $remoteVersionUrl -Method Get
+    return $response.Content
+  }
+  catch {
+    Clear-Host
+    functionDrawLogo2
+    Write-Host "Failed to fetch the remote version from GitHub." -ForegroundColor Red
+    Start-Sleep -Seconds 1
+    return $null
+  }
 }
 
 # Compare local and remote versions
 function Compare-Versions {
-    Clear-Host
+  Clear-Host
+  functionDrawLogo2
+  Write-Host "Checking for updates..." -ForegroundColor Yellow
+  start-sleep -Seconds 1
+  $localVersion = Get-LocalVersion
+  $remoteVersion = Get-RemoteVersion
+
+  if ($null -eq $localVersion -or $null -eq $remoteVersion) {
+    Write-Host "Could not compare versions. Ensure both files are accessible." -ForegroundColor Red
+    Start-Sleep -Seconds 1
+    return
+  }
+
+  $localVersion = $localVersion.Trim()
+  $remoteVersion = $remoteVersion.Trim()
+
+  if ($localVersion -ne $remoteVersion) {
+    $currentFolder = $PSScriptRoot
     functionDrawLogo2
-    Write-Host "Checking for updates..." -ForegroundColor Yellow
-    $localVersion = Get-LocalVersion
-    $remoteVersion = Get-RemoteVersion
-
-    if ($null -eq $localVersion -or $null -eq $remoteVersion) {
-        Write-Host "Could not compare versions. Ensure both files are accessible." -ForegroundColor Red
-        return
-    }
-
-    $localVersion = $localVersion.Trim()
-    $remoteVersion = $remoteVersion.Trim()
-
-    if ($localVersion -ne $remoteVersion) {
-        $currentFolder = $PSScriptRoot
-        Clear-Host
-        functionDrawLogo2
-        Write-Host "An update is available! Installed version: $localVersion, New version: $remoteVersion" -ForegroundColor Yellow
-        Write-Host @"
-`nPlease update the script to the latest version to continue!
+    Write-Host "A new version $remoteVersion is available, your currently installed version is $localVersion" -ForegroundColor Yellow
+    Write-Host @"
+`nPlease update the script to the latest version!
+You still can use this script without updating, but it is recommended to `nupdate to the latest version for the best experience.
 `nPlease delete the files in this folder:`n
 "@ -ForegroundColor Yellow
-        Write-Host "    $currentFolder`n" -ForegroundColor Cyan
-        Write-Host "THEN run this on Command Prompt again:" -ForegroundColor Yellow
-        Write-Host @"
+    Write-Host "    $currentFolder`n" -ForegroundColor Cyan
+    Write-Host "THEN run this command on Command Prompt:" -ForegroundColor Yellow
+    Write-Host @"
 
     git clone https://github.com/fonseware/electronjs-setup.git
     cd electronjs-setup
     powershell -ExecutionPolicy Bypass -File setup.ps1
 "@ -ForegroundColor Cyan
-        functionDrawLine2
-        Pause
-        Clear-Host
-        exit
-    }
-    else {
-        #Write-Host "You are using the latest version: $localVersion." -ForegroundColor Green
-    }
-}
-Clear-Host
-function functionDrawLogo {
+    functionDrawLine
+    Pause
     Clear-Host
-    # https://www.asciiart.eu/text-to-ascii-art
-    Write-Host @"
-      _           _                      _                _               
-  ___| | ___  ___| |_ _ __ ___  _ __    (_)___   ___  ___| |_ _   _ _ __  
- / _ \ |/ _ \/ __| __| '__/ _ \| '_ \   | / __| / __|/ _ \ __| | | | '_ \ 
-|  __/ |  __/ (__| |_| | | (_) | | | |_ | \__ \ \__ \  __/ |_| |_| | |_) |
- \___|_|\___|\___|\__|_|  \___/|_| |_(_)/ |___/ |___/\___|\__|\__,_| .__/ 
-                                      |__/                         |_|   v$varVersion
-_______________________________________________________________________________
-
-"@ -ForegroundColor Green
-}
-
-function functionShowMainMenu {
-    Write-Host @"
-.--------------------------------------------------------------------------.
-| Note: An active internet connection is required for this script to work. |
-'--------------------------------------------------------------------------'`n
-"@ -ForegroundColor Magenta
-    Write-Host " Main Menu" -ForegroundColor Cyan
-    Write-Host " 1. Check & install for prerequisites" -ForegroundColor Cyan
-    Write-Host " 2. Create a new basic Electron.js app (default)" -ForegroundColor Cyan
-    Write-Host " 3. Create a new Electron.js app using Vite templates" -ForegroundColor Cyan
-    Write-Host " 4. Create a new Windows 10 style Electron.js app" -ForegroundColor Cyan
-    Write-Host " 5. About this script" -ForegroundColor Cyan
-    Write-Host " 6. Exit" -ForegroundColor Cyan
-    Write-Host "`n(c) 2025 fonseware" -ForegroundColor Cyan
-}
-
-function functionDrawLine {
-    Write-Host "_______________________________________________________________________________" -ForegroundColor Yellow
+  }
+  else {
+    functionDrawLogo2
+    Write-Host "You are using the latest version." -ForegroundColor Green
+    Start-Sleep -Seconds 1
+  }
 }
 
 function functionCheckForPrerequisites {
-    functionDrawLogo
-    Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
-    Write-Host "[-] Chocolatey"-ForegroundColor Yellow
-    Write-Host "[ ] Node.js"-ForegroundColor DarkGray
-    Write-Host "[ ] Visual Studio Code"-ForegroundColor DarkGray
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Host "`nChocolatey is not installed. Installing Chocolatey..." -ForegroundColor Yellow
-        Set-ExecutionPolicy Bypass -Scope Process -Force; 
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
-        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        Start-Sleep -Seconds 5
+  functionDrawLogo
+    # Check internet connection before proceeding
+    if (-not (Test-InternetConnection)) {
+      Write-Host "No internet connection. Please connect to the internet and try again." -ForegroundColor Red
+      return
     }
-    else {
-        Write-Host "`nChocolatey is already installed." -ForegroundColor Green
-    }
-    Start-Sleep -Seconds 1
-    functionDrawLogo
-    Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
-    Write-Host "[*] Chocolatey"-ForegroundColor Green
-    Write-Host "[-] Node.js"-ForegroundColor Yellow
-    Write-Host "[ ] Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
+  Write-Host "[-] Chocolatey"-ForegroundColor Yellow
+  Write-Host "[ ] Node.js"-ForegroundColor DarkGray
+  Write-Host "[ ] Visual Studio Code"-ForegroundColor DarkGray
+  if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+    Write-Host "`nChocolatey is not installed. Installing Chocolatey..." -ForegroundColor Yellow
+    Set-ExecutionPolicy Bypass -Scope Process -Force; 
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    Start-Sleep -Seconds 5
+  }
+  else {
+    Write-Host "`nChocolatey is already installed." -ForegroundColor Green
+  }
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
+  Write-Host "[*] Chocolatey"-ForegroundColor Green
+  Write-Host "[-] Node.js"-ForegroundColor Yellow
+  Write-Host "[ ] Visual Studio Code"-ForegroundColor DarkGray
 
-    $vsCodePath = Get-Command 'code' -ErrorAction SilentlyContinue
-    if (-not $vsCodePath) {
-        Write-Host "`nVisual Studio Code is not installed. Installing VS Code..." -ForegroundColor Yellow
-        choco install vscode -y
-    }
-    else {
-        Write-Host "`nVisual Studio Code is already installed." -ForegroundColor Green
-    }
+  $vsCodePath = Get-Command 'code' -ErrorAction SilentlyContinue
+  if (-not $vsCodePath) {
+    Write-Host "`nVisual Studio Code is not installed. Installing VS Code..." -ForegroundColor Yellow
+    choco install vscode -y
+  }
+  else {
+    Write-Host "`nVisual Studio Code is already installed." -ForegroundColor Green
+  }
 
-    Start-Sleep -Seconds 1
-    functionDrawLogo
-    Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
-    Write-Host "[*] Chocolatey"-ForegroundColor Green
-    Write-Host "[*] Node.js"-ForegroundColor Green
-    Write-Host "[-] Visual Studio Code"-ForegroundColor Yellow
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
+  Write-Host "[*] Chocolatey"-ForegroundColor Green
+  Write-Host "[*] Node.js"-ForegroundColor Green
+  Write-Host "[-] Visual Studio Code"-ForegroundColor Yellow
 
-    $nodePath = Get-Command 'node' -ErrorAction SilentlyContinue
-    if (-not $nodePath) {
-        Write-Host "`nNode.js is not installed. Installing Node.js..." -ForegroundColor Yellow
-        choco install nodejs -y
-    }
-    else {
-        Write-Host "`nNode.js is already installed." -ForegroundColor Green
-    }
+  $nodePath = Get-Command 'node' -ErrorAction SilentlyContinue
+  if (-not $nodePath) {
+    Write-Host "`nNode.js is not installed. Installing Node.js..." -ForegroundColor Yellow
+    choco install nodejs -y
+  }
+  else {
+    Write-Host "`nNode.js is already installed." -ForegroundColor Green
+  }
 
-    Start-Sleep -Seconds 1
-    functionDrawLogo
-    Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
-    Write-Host "[*] Chocolatey"-ForegroundColor Green
-    Write-Host "[*] Node.js"-ForegroundColor Green
-    Write-Host "[*] Visual Studio Code"-ForegroundColor Green
-    Write-Host "`nAll prerequisites are installed." -ForegroundColor Green
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
+  Write-Host "[*] Chocolatey"-ForegroundColor Green
+  Write-Host "[*] Node.js"-ForegroundColor Green
+  Write-Host "[*] Visual Studio Code"-ForegroundColor Green
+  Write-Host "`nAll prerequisites are installed." -ForegroundColor Green
 }
 
 function functionCreateElectronAppDefault {
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[-] Step 1: Name of the project"-ForegroundColor Yellow
-    Write-Host "[ ] Step 2: Creating project directory and initialise npm"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 3: Installing Electron to project"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 4: Creating main.js file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 5: Creating index.html file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
-    functionDrawLine
-    do {
-        $projectName = Read-Host "Enter the name of your Electron project (use dashes instead of spaces)"
-        if (-not [string]::IsNullOrWhiteSpace($projectName)) {
-            $projectName = $projectName -replace ' ', '-'
-        }
-        else {
-            Write-Host "Error: Project name cannot be empty. Please try again.`nYou will be taken to the main menu..." -ForegroundColor Red
-            return
-        }
-    } while ([string]::IsNullOrWhiteSpace($projectName))
-    do {
-        $defaultLocation = "C:\Users\$env:USERNAME\source\repos"
-        $projectLocation = Read-Host "Enter the location (press [Enter] to use default: $defaultLocation\)"
-        if ([string]::IsNullOrWhiteSpace($projectLocation)) {
-            $projectLocation = $defaultLocation
-            Write-Host "No input provided. The project will be saved in: $projectLocation\" -ForegroundColor Yellow
-        }
-        if (Test-Path "$projectLocation\$projectName") {
-            Write-Host "Error: A folder already exists at this location. Please enter a different path." -ForegroundColor Red
-        }
-        else {
-            break
-        }
-    } while ($true)
-    functionDrawLine
-    Write-Host "Review your project settings..." -ForegroundColor Yellow
-    Write-Host "Project Name: $projectName"
-    Write-Host "Save Location: $projectLocation\"
-    Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
-    functionDrawLine
-    Write-Host "`nPress [Enter] to continue or type '1' to start over..."
-    $inputValue = Read-Host "Enter your choice"
-    if ($inputValue -eq "1") {
-        return
-    } 
-    if ($inputValue -eq "") {} else {
-        Write-Host "`nInvalid input.... You will be taken to the main menu..." -ForegroundColor Red
-        return
+  functionDrawLogo
+  # Check internet connection before proceeding
+  if (-not (Test-InternetConnection)) {
+    Write-Host "No internet connection. Please connect to the internet and try again." -ForegroundColor Red
+    return
+  }
+
+  #Write-Host "Internet is available. Proceeding with npm project creation..."
+
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[-] Step 1: Name of the project"-ForegroundColor Yellow
+  Write-Host "[ ] Step 2: Creating project directory and initialise npm"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 3: Installing Electron to project"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 4: Creating main.js file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 5: Creating index.html file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
+  functionDrawLine
+  do {
+    $projectName = Read-Host "Enter the name of your Electron project (use dashes instead of spaces)"
+    if (-not [string]::IsNullOrWhiteSpace($projectName)) {
+      $projectName = $projectName -replace ' ', '-'
     }
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[-] Step 2: Creating project directory and initialise npm"-ForegroundColor Yellow
-    Write-Host "[ ] Step 3: Installing Electron to project"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 4: Creating main.js file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 5: Creating index.html file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
-    $fullPath = Join-Path -Path $projectLocation -ChildPath $projectName
-    mkdir $fullPath | Out-Null
-    Set-Location -Path $fullPath
-    npm init -y > $null 2>&1
-    Start-Sleep -Seconds 2
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[-] Step 3: Installing Electron to project"-ForegroundColor Yellow
-    Write-Host "[ ] Step 4: Creating main.js file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 5: Creating index.html file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
-    functionDrawLine
-    Write-Host "This process may take some time, please wait...`n"
-    Write-Host "`nFor errors in this process, check the project logs for more info." -ForegroundColor Yellow
-    Write-host "Located: $projectLocation\$projectName\error.log" -ForegroundColor Yellow
-    npm install --save-dev electron > $null 2> error.log
-    Start-Sleep -Seconds 2
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[-] Step 4: Creating main.js file"-ForegroundColor Yellow
-    Write-Host "[ ] Step 5: Creating index.html file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
-    $mainJsContent = @"
+    else {
+      Write-Host "Error: Project name cannot be empty. Please try again." -ForegroundColor Red
+      return
+    }
+  } while ([string]::IsNullOrWhiteSpace($projectName))
+  do {
+    $defaultLocation = "C:\Users\$env:USERNAME\source\repos"
+    $projectLocation = Read-Host "Enter the location (press [Enter] to use default: $defaultLocation\)"
+    if ([string]::IsNullOrWhiteSpace($projectLocation)) {
+      $projectLocation = $defaultLocation
+      Write-Host "No input provided. The project will be saved in: $projectLocation\" -ForegroundColor Yellow
+    }
+    if (Test-Path "$projectLocation\$projectName") {
+      Write-Host "Error: A folder already exists at this location. Please enter a different path." -ForegroundColor Red
+    }
+    else {
+      break
+    }
+  } while ($true)
+  functionDrawLine
+  Write-Host "Review your project settings..." -ForegroundColor Yellow
+  Write-Host "Project Name: $projectName"
+  Write-Host "Save Location: $projectLocation\"
+  Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
+  functionDrawLine
+  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu,`n to start over..."
+  $inputValue = Read-Host "Enter your choice"
+  if ($inputValue -eq "1") {
+    return
+  } 
+  if ($inputValue -eq "") {} else {
+    Write-Host "`nInvalid input..." -ForegroundColor Red
+    return
+  }
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[-] Step 2: Creating project directory and initialise npm"-ForegroundColor Yellow
+  Write-Host "[ ] Step 3: Installing Electron to project"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 4: Creating main.js file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 5: Creating index.html file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
+  $fullPath = Join-Path -Path $projectLocation -ChildPath $projectName
+  mkdir $fullPath | Out-Null
+  Set-Location -Path $fullPath
+  npm init -y > $null 2>&1
+  Start-Sleep -Seconds 2
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[-] Step 3: Installing Electron to project"-ForegroundColor Yellow
+  Write-Host "[ ] Step 4: Creating main.js file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 5: Creating index.html file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
+  functionDrawLine
+  Write-Host "This process may take some time, please wait...`n"
+  Write-Host "`nFor errors in this process, check the project logs for more info." -ForegroundColor Yellow
+  Write-host "Located: $projectLocation\$projectName\error.log" -ForegroundColor Yellow
+  npm install --save-dev electron > $null 2> error.log
+  Start-Sleep -Seconds 2
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[-] Step 4: Creating main.js file"-ForegroundColor Yellow
+  Write-Host "[ ] Step 5: Creating index.html file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
+  $mainJsContent = @"
 const { app, BrowserWindow } = require('electron');
 
 function createWindow() {
@@ -348,19 +355,19 @@ app.on('window-all-closed', () => {`
     if (process.platform !== 'darwin') app.quit();
 });
 "@
-    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "main.js") -Value $mainJsContent
-    Start-Sleep -Seconds 1
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
-    Write-Host "[-] Step 5: Creating index.html file"-ForegroundColor Yellow
-    Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
-    $htmlContent = @"
+  Set-Content -Path (Join-Path -Path $fullPath -ChildPath "main.js") -Value $mainJsContent
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
+  Write-Host "[-] Step 5: Creating index.html file"-ForegroundColor Yellow
+  Write-Host "[ ] Step 6: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
+  $htmlContent = @"
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -376,180 +383,185 @@ app.on('window-all-closed', () => {`
 </body>
 </html>
 "@
-    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "index.html") -Value $htmlContent
-    Start-Sleep -Seconds 1
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
-    Write-Host "[*] Step 5: Creating index.html file"-ForegroundColor Green
-    Write-Host "[-] Step 6: Updating package.json file"-ForegroundColor Yellow
-    Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
-    $jsonPath = Join-Path -Path $fullPath -ChildPath "package.json"
-    $jsonContent = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
-    $jsonContent.main = "main.js"
-    $jsonContent.scripts = @{ "start" = "electron ." }
-    $jsonContent | ConvertTo-Json -Compress | Set-Content -Path $jsonPath
-    Start-Sleep -Seconds 1
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
-    Write-Host "[*] Step 5: Creating index.html file"-ForegroundColor Green
-    Write-Host "[*] Step 6: Updating package.json file"-ForegroundColor Green
-    Write-Host "[-] Step 7: Opening project in Visual Studio Code"-ForegroundColor Yellow
-    Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
-    Set-Location -Path $fullPath
-    code .
-    Start-Sleep -Seconds 2
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
-    Write-Host "[*] Step 5: Creating index.html file"-ForegroundColor Green
-    Write-Host "[*] Step 6: Updating package.json file"-ForegroundColor Green
-    Write-Host "[*] Step 7: Opening project in Visual Studio Code"-ForegroundColor Green
-    Write-Host "[-] Step 8: Building Electron app"-ForegroundColor Yellow
-    functionDrawLine
-    Write-Host "| To run your Electron app, open a new terminal in VS Code and run the following command:" -ForegroundColor Yellow
-    Write-Host "| npm start" -ForegroundColor Cyan
-    #Write-Host "`n`tnpm start`n" -ForegroundColor Cyan
-    npm start > $null 2>&1
-    Start-Sleep -Seconds 2
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
-    Write-Host "[*] Step 5: Creating index.html file"-ForegroundColor Green
-    Write-Host "[*] Step 6: Updating package.json file"-ForegroundColor Green
-    Write-Host "[*] Step 7: Opening project in Visual Studio Code"-ForegroundColor Green
-    Write-Host "[*] Step 8: Building Electron app"-ForegroundColor Green
-    write-host "`nYour Electron app has been created successfully!" -ForegroundColor Green
-    write-host "`nThank you for using the Electron.js Setup script." -ForegroundColor Green
+  Set-Content -Path (Join-Path -Path $fullPath -ChildPath "index.html") -Value $htmlContent
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
+  Write-Host "[*] Step 5: Creating index.html file"-ForegroundColor Green
+  Write-Host "[-] Step 6: Updating package.json file"-ForegroundColor Yellow
+  Write-Host "[ ] Step 7: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
+  $jsonPath = Join-Path -Path $fullPath -ChildPath "package.json"
+  $jsonContent = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
+  $jsonContent.main = "main.js"
+  $jsonContent.scripts = @{ "start" = "electron ." }
+  $jsonContent | ConvertTo-Json -Compress | Set-Content -Path $jsonPath
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
+  Write-Host "[*] Step 5: Creating index.html file"-ForegroundColor Green
+  Write-Host "[*] Step 6: Updating package.json file"-ForegroundColor Green
+  Write-Host "[-] Step 7: Opening project in Visual Studio Code"-ForegroundColor Yellow
+  Write-Host "[ ] Step 8: Building Electron app"-ForegroundColor DarkGray
+  Set-Location -Path $fullPath
+  code .
+  Start-Sleep -Seconds 2
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
+  Write-Host "[*] Step 5: Creating index.html file"-ForegroundColor Green
+  Write-Host "[*] Step 6: Updating package.json file"-ForegroundColor Green
+  Write-Host "[*] Step 7: Opening project in Visual Studio Code"-ForegroundColor Green
+  Write-Host "[-] Step 8: Building Electron app"-ForegroundColor Yellow
+  functionDrawLine
+  Write-Host "| To run your Electron app, open a new terminal in VS Code and run the following command:" -ForegroundColor Yellow
+  Write-Host "| npm start" -ForegroundColor Cyan
+  #Write-Host "`n`tnpm start`n" -ForegroundColor Cyan
+  npm start > $null 2>&1
+  Start-Sleep -Seconds 2
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating main.js file"-ForegroundColor Green
+  Write-Host "[*] Step 5: Creating index.html file"-ForegroundColor Green
+  Write-Host "[*] Step 6: Updating package.json file"-ForegroundColor Green
+  Write-Host "[*] Step 7: Opening project in Visual Studio Code"-ForegroundColor Green
+  Write-Host "[*] Step 8: Building Electron app"-ForegroundColor Green
+  write-host "`nYour Electron app has been created successfully!" -ForegroundColor Green
+  write-host "`nThank you for using the Electron.js Setup script." -ForegroundColor Green
 }
 
 function functionCreateElectronAppVite {
-    functionDrawLogo
-    #Write-Host "Sorry! This feature is still under development." -ForegroundColor Red
-    Write-Host "You are about to run a script, outside the scope of this setup.`n" -ForegroundColor Yellow
-    Write-Host "    npm create @quick-start/electron@latest`n" -ForegroundColor Cyan
-    Write-Host "If you want to leave while running, press [Escape] to leave the script." -ForegroundColor Yellow
-    functionDrawLine
-    Write-Host "Press [Enter] to continue or type '1' to start over..."
-    $inputValue = Read-Host "Enter your choice"
-    if ($inputValue -eq "1") {
-        return
-    } 
-    if ($inputValue -eq "") {} else {
-        Write-Host "`nInvalid input.... You will be taken to the main menu..." -ForegroundColor Red
-        return
-    }
-    Clear-Host
-    functionDrawLogo
-    Write-Host "You are inside the script.`n" -ForegroundColor Red
-    npm create @quick-start/electron@latest
+  functionDrawLogo
+  Write-Host "You are about to run a script, outside the scope of this setup.`n" -ForegroundColor Yellow
+  Write-Host "    npm create @quick-start/electron@latest`n" -ForegroundColor Cyan
+  Write-Host "If you want to exit while running the above script, press [Escape]." -ForegroundColor Yellow
+  functionDrawLine
+  Write-Host "Press [Enter] to start the script or type '1' to go to main menu."
+  $inputValue = Read-Host "Enter your choice"
+  if ($inputValue -eq "1") {
+    return
+  } 
+  if ($inputValue -eq "") {} else {
+    Write-Host "`nInvalid input..." -ForegroundColor Red
+    return
+  }
+  Clear-Host
+  functionDrawLogo
+  Write-Host "running command ""npm create @quick-start/electron@latest""" -ForegroundColor Cyan
+  functionDrawLine
+  npm create @quick-start/electron@latest
 }
 
 function functionCreateElectronAppWindowsStyle {
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
-    Write-Host "[-] Step 1: Name of the project"-ForegroundColor Yellow
-    Write-Host "[ ] Step 2: Creating project directory and initialise npm"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 3: Installing Electron to project"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 4: Creating all files"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 5: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
-    functionDrawLine
-    do {
-        $projectName = Read-Host "Enter the name of your Electron project (use dashes instead of spaces)"
-        if (-not [string]::IsNullOrWhiteSpace($projectName)) {
-            $projectName = $projectName -replace ' ', '-'
-        }
-        else {
-            Write-Host "Error: Project name cannot be empty. Please try again.`nYou will be taken to the main menu..." -ForegroundColor Red
-            return
-        }
-    } while ([string]::IsNullOrWhiteSpace($projectName))
-    do {
-        $defaultLocation = "C:\Users\$env:USERNAME\source\repos"
-        $projectLocation = Read-Host "Enter the location (press [Enter] to use default: $defaultLocation\)"
-        if ([string]::IsNullOrWhiteSpace($projectLocation)) {
-            $projectLocation = $defaultLocation
-            Write-Host "No input provided. The project will be saved in: $projectLocation\" -ForegroundColor Yellow
-        }
-        if (Test-Path "$projectLocation\$projectName") {
-            Write-Host "Error: A folder already exists at this location. Please enter a different path." -ForegroundColor Red
-        }
-        else {
-            break
-        }
-    } while ($true)
-    functionDrawLine
-    Write-Host "Review your project settings..." -ForegroundColor Yellow
-    Write-Host "Project Name: $projectName"
-    Write-Host "Save Location: $projectLocation\"
-    Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
-    functionDrawLine
-    Write-Host "`nPress [Enter] to continue or type '1' to start over..."
-    $inputValue = Read-Host "Enter your choice"
-    if ($inputValue -eq "1") {
-        return
-    } 
-    if ($inputValue -eq "") {} else {
-        Write-Host "`nInvalid input.... You will be taken to the main menu..." -ForegroundColor Red
-        return
+  functionDrawLogo
+    # Check internet connection before proceeding
+    if (-not (Test-InternetConnection)) {
+      Write-Host "No internet connection. Please connect to the internet and try again." -ForegroundColor Red
+      return
     }
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[-] Step 2: Creating project directory and initialise npm"-ForegroundColor Yellow
-    Write-Host "[ ] Step 3: Installing Electron to project"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 4: Creating all files"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 5: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
-    $fullPath = Join-Path -Path $projectLocation -ChildPath $projectName
-    mkdir $fullPath | Out-Null
-    Set-Location -Path $fullPath
-    npm init -y > $null 2>&1
-    Start-Sleep -Seconds 2
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[-] Step 3: Installing Electron to project"-ForegroundColor Yellow
-    Write-Host "[ ] Step 4: Creating all files"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 5: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
-    functionDrawLine
-    Write-Host "This process may take some time, please wait...`n"
-    Write-Host "`nFor errors in this process, check the project logs for more info." -ForegroundColor Yellow
-    Write-host "Located: $projectLocation\$projectName\error.log" -ForegroundColor Yellow
-    npm install --save-dev electron > $null 2> error.log
-    Start-Sleep -Seconds 2
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[-] Step 4: Creating all files"-ForegroundColor Yellow
-    Write-Host "[ ] Step 5: Updating package.json file"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
-    functionDrawLine
-    Write-Host "This process may take some time, please wait...`n"
-    $mainJsContent = @"
+  Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
+  Write-Host "[-] Step 1: Name of the project"-ForegroundColor Yellow
+  Write-Host "[ ] Step 2: Creating project directory and initialise npm"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 3: Installing Electron to project"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 4: Creating all files"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 5: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
+  functionDrawLine
+  do {
+    $projectName = Read-Host "Enter the name of your Electron project (use dashes instead of spaces)"
+    if (-not [string]::IsNullOrWhiteSpace($projectName)) {
+      $projectName = $projectName -replace ' ', '-'
+    }
+    else {
+      Write-Host "Error: Project name cannot be empty. Please try again." -ForegroundColor Red
+      return
+    }
+  } while ([string]::IsNullOrWhiteSpace($projectName))
+  do {
+    $defaultLocation = "C:\Users\$env:USERNAME\source\repos"
+    $projectLocation = Read-Host "Enter the location (press [Enter] to use default: $defaultLocation\)"
+    if ([string]::IsNullOrWhiteSpace($projectLocation)) {
+      $projectLocation = $defaultLocation
+      Write-Host "No input provided. The project will be saved in: $projectLocation\" -ForegroundColor Yellow
+    }
+    if (Test-Path "$projectLocation\$projectName") {
+      Write-Host "Error: A folder already exists at this location. Please enter a different path." -ForegroundColor Red
+    }
+    else {
+      break
+    }
+  } while ($true)
+  functionDrawLine
+  Write-Host "Review your project settings..." -ForegroundColor Yellow
+  Write-Host "Project Name: $projectName"
+  Write-Host "Save Location: $projectLocation\"
+  Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
+  functionDrawLine
+  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu,`n to start over..."
+  $inputValue = Read-Host "Enter your choice"
+  if ($inputValue -eq "1") {
+    return
+  } 
+  if ($inputValue -eq "") {} else {
+    Write-Host "`nInvalid input..." -ForegroundColor Red
+    return
+  }
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[-] Step 2: Creating project directory and initialise npm"-ForegroundColor Yellow
+  Write-Host "[ ] Step 3: Installing Electron to project"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 4: Creating all files"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 5: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
+  $fullPath = Join-Path -Path $projectLocation -ChildPath $projectName
+  mkdir $fullPath | Out-Null
+  Set-Location -Path $fullPath
+  npm init -y > $null 2>&1
+  Start-Sleep -Seconds 2
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[-] Step 3: Installing Electron to project"-ForegroundColor Yellow
+  Write-Host "[ ] Step 4: Creating all files"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 5: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
+  functionDrawLine
+  Write-Host "This process may take some time, please wait...`n"
+  Write-Host "`nFor errors in this process, check the project logs for more info." -ForegroundColor Yellow
+  Write-host "Located: $projectLocation\$projectName\error.log" -ForegroundColor Yellow
+  npm install --save-dev electron > $null 2> error.log
+  Start-Sleep -Seconds 2
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[-] Step 4: Creating all files"-ForegroundColor Yellow
+  Write-Host "[ ] Step 5: Updating package.json file"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
+  functionDrawLine
+  Write-Host "This process may take some time, please wait...`n"
+  $mainJsContent = @"
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
@@ -605,14 +617,14 @@ ipcMain.on('close-window', () => {
   mainWindow.close();
 });
 "@
-    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "main.js") -Value $mainJsContent
-    Start-Sleep -Seconds 1
-    $htmlContent = @"
+  Set-Content -Path (Join-Path -Path $fullPath -ChildPath "main.js") -Value $mainJsContent
+  Start-Sleep -Seconds 1
+  $htmlContent = @"
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <title>Hello World! $projectName</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -659,7 +671,7 @@ ipcMain.on('close-window', () => {
       <h1>Hello World!</h1>
       <p>Electron version: <span id="electron-ver"></span></p>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque hendrerit nulla ut libero varius sollicitudin.
+      Welcome to your new project, $projectName. This is a fork of this project from GitHub <a href="https://github.com/binaryfunt/electron-seamless-titlebar-tutorial">Visit Electron Seamless Titlebar Tutorial. This part of the project is created using the Electron.JS Setup. Tell a friend about this script. For any issues please submit them on the project page.</a>
       </p>
     </div>
 
@@ -667,9 +679,9 @@ ipcMain.on('close-window', () => {
   </body>
 </html>
 "@
-    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "index.html") -Value $htmlContent
-    Start-Sleep -Seconds 1
-    $cssContent = @"
+  Set-Content -Path (Join-Path -Path $fullPath -ChildPath "index.html") -Value $htmlContent
+  Start-Sleep -Seconds 1
+  $cssContent = @"
 /* Basic styling */
 * {margin: 0; padding: 0; border: 0; vertical-align: baseline;}
 html {box-sizing: border-box;}
@@ -834,9 +846,9 @@ body {
   display: none;
 }
 "@
-    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "style.css") -Value $cssContent
-    Start-Sleep -Seconds 1
-    $preloadContent = @"
+  Set-Content -Path (Join-Path -Path $fullPath -ChildPath "style.css") -Value $cssContent
+  Start-Sleep -Seconds 1
+  $preloadContent = @"
 const { contextBridge, ipcRenderer } = require('electron');
 
 // Expose IPC methods to the renderer process
@@ -855,9 +867,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
 });
 "@
-    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "preload.js") -Value $preloadContent
-    Start-Sleep -Seconds 1
-    $rendererContent = @"
+  Set-Content -Path (Join-Path -Path $fullPath -ChildPath "preload.js") -Value $preloadContent
+  Start-Sleep -Seconds 1
+  $rendererContent = @"
 document.onreadystatechange = () => {
     if (document.readyState === 'complete') {
       handleWindowControls();
@@ -897,93 +909,93 @@ document.onreadystatechange = () => {
     });
   }
 "@
-    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "renderer.js") -Value $rendererContent
-    Start-Sleep -Seconds 1
+  Set-Content -Path (Join-Path -Path $fullPath -ChildPath "renderer.js") -Value $rendererContent
+  Start-Sleep -Seconds 1
 
-    # Define the source folder (assuming it's named "icons" and is in the current directory)
-    $sourceFolder = Join-Path -Path $PSScriptRoot -ChildPath "icons"
+  # Define the source folder (assuming it's named "icons" and is in the current directory)
+  $sourceFolder = Join-Path -Path $PSScriptRoot -ChildPath "icons"
 
-    # Check if the source folder exists
-    if (Test-Path -Path $sourceFolder -PathType Container) {
-        # Create the destination directory if it doesn't exist
-        if (-not (Test-Path -Path $fullPath)) {
-            New-Item -ItemType Directory -Path $fullPath | Out-Null
-        }
-
-        # Copy the folder to the destination
-        Copy-Item -Path $sourceFolder -Destination $fullPath -Recurse -Force
-
-        #Write-Host "Folder 'icons' copied successfully to $fullPath."
+  # Check if the source folder exists
+  if (Test-Path -Path $sourceFolder -PathType Container) {
+    # Create the destination directory if it doesn't exist
+    if (-not (Test-Path -Path $fullPath)) {
+      New-Item -ItemType Directory -Path $fullPath | Out-Null
     }
-    else {
-        #Write-Host "Source folder 'icons' does not exist in the current directory."
-    }
-    Start-Sleep -Seconds 1
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating all files"-ForegroundColor Green
-    Write-Host "[-] Step 5: Updating package.json file"-ForegroundColor Yellow
-    Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
-    Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
-    $jsonPath = Join-Path -Path $fullPath -ChildPath "package.json"
-    $jsonContent = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
-    $jsonContent.main = "main.js"
-    $jsonContent.scripts = @{ "start" = "electron ." }
-    $jsonContent | ConvertTo-Json -Compress | Set-Content -Path $jsonPath
-    Start-Sleep -Seconds 1
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating all files"-ForegroundColor Green
-    Write-Host "[*] Step 5: Updating package.json file"-ForegroundColor Green
-    Write-Host "[-] Step 6: Opening project in Visual Studio Code"-ForegroundColor Yellow
-    Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
-    Set-Location -Path $fullPath
-    code .
-    Start-Sleep -Seconds 2
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating all files"-ForegroundColor Green
-    Write-Host "[*] Step 5: Updating package.json file"-ForegroundColor Green
-    Write-Host "[*] Step 6: Opening project in Visual Studio Code"-ForegroundColor Green
-    Write-Host "[-] Step 7: Building Electron app"-ForegroundColor Yellow
-    functionDrawLine
-    Write-Host "| To run your Electron app, open a new terminal in VS Code and run the following command:" -ForegroundColor Yellow
-    Write-Host "| npm start" -ForegroundColor Cyan
-    #Write-Host "`n`tnpm start`n" -ForegroundColor Cyan
-    npm start > $null 2>&1
-    Start-Sleep -Seconds 2
-    functionDrawLogo
-    Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
-    Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
-    Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
-    Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
-    Write-Host "[*] Step 4: Creating all files"-ForegroundColor Green
-    Write-Host "[*] Step 5: Updating package.json file"-ForegroundColor Green
-    Write-Host "[*] Step 6: Opening project in Visual Studio Code"-ForegroundColor Green
-    Write-Host "[*] Step 7: Building Electron app"-ForegroundColor Green
-    write-host "`nYour Electron app has been created successfully!" -ForegroundColor Green
-    write-host "`nThank you for using the Electron.js Setup script." -ForegroundColor Green
+
+    # Copy the folder to the destination
+    Copy-Item -Path $sourceFolder -Destination $fullPath -Recurse -Force
+
+    #Write-Host "Folder 'icons' copied successfully to $fullPath."
+  }
+  else {
+    #Write-Host "Source folder 'icons' does not exist in the current directory."
+  }
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating all files"-ForegroundColor Green
+  Write-Host "[-] Step 5: Updating package.json file"-ForegroundColor Yellow
+  Write-Host "[ ] Step 6: Opening project in Visual Studio Code"-ForegroundColor DarkGray
+  Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
+  $jsonPath = Join-Path -Path $fullPath -ChildPath "package.json"
+  $jsonContent = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
+  $jsonContent.main = "main.js"
+  $jsonContent.scripts = @{ "start" = "electron ." }
+  $jsonContent | ConvertTo-Json -Compress | Set-Content -Path $jsonPath
+  Start-Sleep -Seconds 1
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating all files"-ForegroundColor Green
+  Write-Host "[*] Step 5: Updating package.json file"-ForegroundColor Green
+  Write-Host "[-] Step 6: Opening project in Visual Studio Code"-ForegroundColor Yellow
+  Write-Host "[ ] Step 7: Building Electron app"-ForegroundColor DarkGray
+  Set-Location -Path $fullPath
+  code .
+  Start-Sleep -Seconds 2
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating all files"-ForegroundColor Green
+  Write-Host "[*] Step 5: Updating package.json file"-ForegroundColor Green
+  Write-Host "[*] Step 6: Opening project in Visual Studio Code"-ForegroundColor Green
+  Write-Host "[-] Step 7: Building Electron app"-ForegroundColor Yellow
+  functionDrawLine
+  Write-Host "| To run your Electron app, open a new terminal in VS Code and run the following command:" -ForegroundColor Yellow
+  Write-Host "| npm start" -ForegroundColor Cyan
+  #Write-Host "`n`tnpm start`n" -ForegroundColor Cyan
+  npm start > $null 2>&1
+  Start-Sleep -Seconds 2
+  functionDrawLogo
+  Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
+  Write-Host "[*] Step 1: Name of the project"-ForegroundColor Green
+  Write-Host "[*] Step 2: Creating project directory and initialise npm"-ForegroundColor Green
+  Write-Host "[*] Step 3: Installing Electron to project"-ForegroundColor Green
+  Write-Host "[*] Step 4: Creating all files"-ForegroundColor Green
+  Write-Host "[*] Step 5: Updating package.json file"-ForegroundColor Green
+  Write-Host "[*] Step 6: Opening project in Visual Studio Code"-ForegroundColor Green
+  Write-Host "[*] Step 7: Building Electron app"-ForegroundColor Green
+  write-host "`nYour Electron app has been created successfully!" -ForegroundColor Green
+  write-host "`nThank you for using the Electron.js Setup script." -ForegroundColor Green
 }
 
 function functionAboutScript {
-    functionDrawLogo
-    Write-Host "About this script`nScript version: $varVersion`n" -ForegroundColor Cyan
-    Write-Host " * This script is designed to help you create a new Electron.js app with ease." -ForegroundColor Yellow
-    Write-Host " * It will guide you through the process of setting up a new Electron app." -ForegroundColor Yellow
-    Write-Host " * The script will check for prerequisites and install them if needed." -ForegroundColor Yellow
-    Write-Host " * It will then create a new Electron app with the default settings." -ForegroundColor Yellow
-    Write-Host " * You can also create a new Electron app with Vite, a faster and more efficient way to create apps." -ForegroundColor Yellow
-    Write-Host " * You can now create a new Windows style Electron apps." -ForegroundColor Yellow
-    Write-Host @"
+  functionDrawLogo
+  Write-Host "About this script`nScript version: $localVersion`n" -ForegroundColor Cyan
+  Write-Host " * This script is designed to help you create a new Electron.js app with ease." -ForegroundColor Yellow
+  Write-Host " * It will guide you through the process of setting up a new Electron app." -ForegroundColor Yellow
+  Write-Host " * The script will check for prerequisites and install them if needed." -ForegroundColor Yellow
+  Write-Host " * It will then create a new Electron app with the default settings." -ForegroundColor Yellow
+  Write-Host " * You can also create a new Electron app with Vite, a faster and more efficient way to create apps." -ForegroundColor Yellow
+  Write-Host " * You can now create a new Windows style Electron apps." -ForegroundColor Yellow
+  Write-Host @"
     `nSoftware License Agreement
     Electron.js Setup is licensed under the MIT License.
     By using this script, you agree to the following terms:
@@ -995,37 +1007,54 @@ function functionAboutScript {
         
     Full license: https://raw.githubusercontent.com/fonseware/electronjs-setup/refs/heads/main/LICENSE
 "@ -ForegroundColor Magenta
-    Write-Host "`n(c) 2025 fonseware" -ForegroundColor Cyan
-    Write-Host "GitHub Repo: https://github.com/fonseware/electronjs-setup" -ForegroundColor Cyan
+  Write-Host "`n(c) 2025 fonseware" -ForegroundColor Cyan
+  Write-Host "GitHub Repo: https://github.com/fonseware/electronjs-setup" -ForegroundColor Cyan
 }
 
 function functionMainMenuChoices {
-    param (
-        [string]$Choice
-    )
+  param (
+    [string]$Choice
+  )
 
-    switch ($Choice) {
-        "1" { functionCheckForPrerequisites }
-        "2" { functionCreateElectronAppDefault }
-        "3" { functionCreateElectronAppVite }
-        "4" { functionCreateElectronAppWindowsStyle }
-        "5" { functionAboutScript }
-        "6" { 
-            functionDrawLogo
-            Write-Host "Exiting script... Goodbye!" -ForegroundColor Red
-            write-host "Thank you for using...  :)" -ForegroundColor Green
-            Clear-Host
-            exit
-            exit
-            exit
-            exit
-            exit
-        }
-        default { 
-            functionDrawLogo
-            Write-Host "Invalid choice, please try again!" -ForegroundColor Red
-        }
+  switch ($Choice) {
+    "1" { functionCheckForPrerequisites }
+    "2" { functionCreateElectronAppDefault }
+    "3" { functionCreateElectronAppVite }
+    "4" { functionCreateElectronAppWindowsStyle }
+    "5" { functionAboutScript }
+    "6" { 
+      functionDrawLogo
+      Write-Host "Exiting script... Goodbye!" -ForegroundColor Yellow
+      write-host "Thank you for using, and tell a friend about this script...  :)`n" -ForegroundColor Green
+      Pause
+      Clear-Host
+      exit
+      exit
+      exit
+      exit
+      exit
     }
+    default { 
+      functionDrawLogo
+      Write-Host "Invalid choice, please try again!" -ForegroundColor Red
+    }
+  }
+}
+
+function functionShowMainMenu {
+  Write-Host @"
+.--------------------------------------------------------------------------.
+| Note: An active internet connection is required for this script to work. |
+'--------------------------------------------------------------------------'`n
+"@ -ForegroundColor Yellow
+  Write-Host "[Main Menu]`n" -ForegroundColor Cyan
+  Write-Host " 1. Check & install for prerequisites" -ForegroundColor Cyan
+  Write-Host " 2. Create a new basic Electron.js app (default)" -ForegroundColor Cyan
+  Write-Host " 3. Create a new Electron.js app using Vite templates" -ForegroundColor Cyan
+  Write-Host " 4. Create a new Windows 10 style Electron.js app" -ForegroundColor Cyan
+  Write-Host " 5. About this script" -ForegroundColor Cyan
+  Write-Host " 6. Exit" -ForegroundColor Cyan
+  Write-Host "`n(c) 2025 fonseware" -ForegroundColor Cyan
 }
 
 # Run the version comparison
@@ -1033,14 +1062,16 @@ functionDrawLogo2
 functionShowInfoScreen
 Pause
 Compare-Versions
+$localVersion = Get-LocalVersion
+$localVersion = $localVersion.Trim()
 # Main loop to keep the menu running
 while ($true) {
-    Set-Location $currentFolder
-    functionDrawLogo
-    functionShowMainMenu
-    $varUserChoice = Read-Host "`nSelect an option (1-6)"
-    functionMainMenuChoices -Choice $varUserChoice
-    #functionDrawLogo
-    Write-Host "`nPress [Enter] to go to main menu..." -ForegroundColor Magenta
-    Read-Host  # Waits for user to press Enter before showing menu again
+  Set-Location $currentFolder
+  functionDrawLogo
+  functionShowMainMenu
+  $varUserChoice = Read-Host "`nSelect an option (1-6)"
+  functionMainMenuChoices -Choice $varUserChoice
+  #functionDrawLogo
+  Write-Host "`nPress [Enter] to go to main menu..." -ForegroundColor Magenta
+  Read-Host  # Waits for user to press Enter before showing menu again
 }
