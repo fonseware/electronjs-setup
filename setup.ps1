@@ -68,19 +68,24 @@ function Test-InternetConnection {
 
 function functionShowInfoScreen {
   Write-Host @"
-A powerful and easy-to-use script designed to quickly set up your Electron.js
-projects. Whether you're a beginner or an experienced developer, this script 
-will streamline the process of creating a new Electron app from scratch.`n
-* No need to manually configure your project. Just answer a few simple 
-prompts, and the script does the rest.`n
-* It automatically checks and installs essential tools such as Chocolatey, 
-Visual Studio Code, and Node.js.`n
-* It creates a new Electron project directory, sets up npm, installs Electron,
- and generates the essential files (like main.js and index.html).`n
-* Once your project is set up, the script opens it directly in Visual Studio 
-Code, so you can start coding right away.`n
-* From initializing your project to launching the app, the script takes care 
-of every step, so you don't have to.`n
+This PowerShell script is designed to simplify the process of setting up and 
+creating new Electron.js projects. Whether you're a beginner or an experienced 
+developer, this script automates the installation of essential tools, 
+initializes your project, and generates the necessary files to get you started 
+quickly. It also provides options to create different types of Electron apps, 
+including a basic Electron app, a Vite-based app, and a Windows-style app.`n
+ - The script checks for and installs essential tools like Chocolatey, Node.js, 
+   and Visual Studio Code if they are not already installed on your system.`n
+ - Automatically creates a new Electron.js project directory, initializes npm, 
+   and installs Electron as a dependency.`n
+ - Generates essential files such as main.js, index.html, and package.json 
+   with default configurations, saving you time on boilerplate code.`n
+ - Multiple Project Templates: Basic Electron App, Vite-based Electron App,
+   Windows-style Electron App`n
+ - Automatically opens the newly created project in Visual Studio Code, allowing 
+   you to start coding immediately.`n
+ - Provides error logging and user-friendly prompts to guide you through the 
+   setup process, even if something goes wrong.
 "@ -ForegroundColor Cyan
   functionDrawLine
 }
@@ -90,7 +95,7 @@ $localVersionFilePath = ".\version.txt"
 
 # URL of the remote version.txt file on GitHub
 #$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
-$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
+$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/main/version.txt"
 
 
 # Function to get the local version from version.txt
@@ -1392,13 +1397,11 @@ document.onreadystatechange = () => {
 
 function functionAboutScript {
   functionDrawLogo
-  Write-Host "About this script`nScript version: $localVersion`n" -ForegroundColor Cyan
-  Write-Host " * This script is designed to help you create a new Electron.js app with ease." -ForegroundColor Yellow
-  Write-Host " * It will guide you through the process of setting up a new Electron app." -ForegroundColor Yellow
-  Write-Host " * The script will check for prerequisites and install them if needed." -ForegroundColor Yellow
-  Write-Host " * It will then create a new Electron app with the default settings." -ForegroundColor Yellow
-  Write-Host " * You can also create a new Electron app with Vite, a faster and more efficient way to create apps." -ForegroundColor Yellow
-  Write-Host " * You can now create a new Windows style Electron apps." -ForegroundColor Yellow
+  Write-Host " - About this script`nScript version: $localVersion`n" -ForegroundColor Cyan
+  Write-Host " - This script is designed to help you create a new Electron.js app quickly and easily." -ForegroundColor Yellow
+  Write-Host " - It will guide you through the process of setting up a new Electron.js project." -ForegroundColor Yellow
+  Write-Host " - You can choose to create a basic Electron.js app, an Electron.js app using`nVite templates, or a Windows 10 style Electron.js app." -ForegroundColor Yellow
+  Write-Host " - This script will also check for the necessary prerequisites and install them if needed." -ForegroundColor Yellow
   Write-Host @"
     `nSoftware License Agreement
     Electron.js Setup is licensed under the MIT License.
