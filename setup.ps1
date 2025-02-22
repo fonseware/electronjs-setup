@@ -178,6 +178,28 @@ function functionCheckForPrerequisites {
     return
   }
   functionDrawLogo
+  Write-Host @"
+This script will check for and install the following prerequisites: 
+- Chocolatey
+- Node.js
+- Visual Studio Code
+
+By continuing, you agree to install these prerequisites on your system.
+ - Chocolatey: https://docs.chocolatey.org/en-us/information/legal/
+ - Visual Studio Code: https://code.visualstudio.com/license
+ - Node.js: https://github.com/nodejs/node/blob/main/LICENSE
+"@ -ForegroundColor Yellow
+  functionDrawLine
+  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu, to start over..."
+  $inputValue = Read-Host "Enter your choice"
+  if ($inputValue -eq "1") {
+    return
+  } 
+  if ($inputValue -eq "") {} else {
+    Write-Host "`nInvalid input..." -ForegroundColor Red
+    return
+  }
+  functionDrawLogo
   Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
   Write-Host "[-] Chocolatey"-ForegroundColor Yellow
   Write-Host "[ ] Node.js"-ForegroundColor DarkGray
@@ -283,7 +305,7 @@ function functionCreateElectronAppDefault {
   Write-Host "Save Location: $projectLocation\"
   Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
   functionDrawLine
-  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu,`n to start over..."
+  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu, to start over..."
   $inputValue = Read-Host "Enter your choice"
   if ($inputValue -eq "1") {
     return
@@ -520,7 +542,7 @@ function functionCreateElectronAppWindowsStyle {
   Write-Host "Save Location: $projectLocation\"
   Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
   functionDrawLine
-  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu,`n to start over..."
+  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu, to start over..."
   $inputValue = Read-Host "Enter your choice"
   if ($inputValue -eq "1") {
     return
