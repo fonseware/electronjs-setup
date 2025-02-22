@@ -34,16 +34,15 @@ This PowerShell script is designed to simplify the process of setting up and cre
 
 ## Features
 
-- Automatic Prerequisite Installation: The script checks for and installs essential tools like Chocolatey, Node.js, and Visual Studio Code if they are not already installed on your system.
-- Project Initialization: Automatically creates a new Electron.js project directory, initializes npm, and installs Electron as a dependency.
-- File Generation: Generates essential files such as main.js, index.html, and package.json with default configurations, saving you time on boilerplate code.
+- The script checks for and installs essential tools like Chocolatey, Node.js, and Visual Studio Code if they are not already installed on your system.
+- Automatically creates a new Electron.js project directory, initializes npm, and installs Electron as a dependency.
+- Generates essential files such as main.js, index.html, and package.json with default configurations, saving you time on boilerplate code.
 - Multiple Project Templates:
   - Basic Electron App: Creates a simple Electron app with default settings.
   - Vite-based Electron App: Uses the npm create @quick-start/electron command to set up a Vite-based Electron app for faster development.
   - Windows-style Electron App: Creates a modern Windows 10/11-style Electron app with custom window controls and a sleek UI.
-- Visual Studio Code Integration: Automatically opens the newly created project in Visual Studio Code, allowing you to start coding immediately.
-- Version Check: The script checks for updates by comparing the local version with the remote version on GitHub, ensuring you are using the latest version of the script.
-- Error Handling: Provides error logging and user-friendly prompts to guide you through the setup process, even if something goes wrong.
+- Automatically opens the newly created project in Visual Studio Code, allowing you to start coding immediately.
+- Provides error logging and user-friendly prompts to guide you through the setup process, even if something goes wrong.
 
 ## Running the Setup
 
