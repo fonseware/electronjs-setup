@@ -89,7 +89,9 @@ of every step, so you don't have to.`n
 $localVersionFilePath = ".\version.txt"
 
 # URL of the remote version.txt file on GitHub
-$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/main/version.txt"
+#$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
+$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
+
 
 # Function to get the local version from version.txt
 function Get-LocalVersion {
@@ -168,11 +170,14 @@ You still can use this script without updating, but it is recommended to `nupdat
 
 function functionCheckForPrerequisites {
   functionDrawLogo
-    # Check internet connection before proceeding
-    if (-not (Test-InternetConnection)) {
-      Write-Host "No internet connection. Please connect to the internet and try again." -ForegroundColor Red
-      return
-    }
+  # Check internet connection before proceeding
+  Write-Host "Checking for network connection..." -ForegroundColor Yellow
+  start-sleep -Seconds 1
+  if (-not (Test-InternetConnection)) {
+    Write-Host "No internet connection. Please connect to the internet and try again." -ForegroundColor Red
+    return
+  }
+  functionDrawLogo
   Write-Host "Checking for prerequisites..." -ForegroundColor Yellow
   Write-Host "[-] Chocolatey"-ForegroundColor Yellow
   Write-Host "[ ] Node.js"-ForegroundColor DarkGray
@@ -231,13 +236,13 @@ function functionCheckForPrerequisites {
 function functionCreateElectronAppDefault {
   functionDrawLogo
   # Check internet connection before proceeding
+  Write-Host "Checking for network connection..." -ForegroundColor Yellow
+  start-sleep -Seconds 1
   if (-not (Test-InternetConnection)) {
     Write-Host "No internet connection. Please connect to the internet and try again." -ForegroundColor Red
     return
   }
-
-  #Write-Host "Internet is available. Proceeding with npm project creation..."
-
+  functionDrawLogo
   Write-Host "Creating a new Electron.js app..." -ForegroundColor Yellow
   Write-Host "[-] Step 1: Name of the project"-ForegroundColor Yellow
   Write-Host "[ ] Step 2: Creating project directory and initialise npm"-ForegroundColor DarkGray
@@ -468,11 +473,14 @@ function functionCreateElectronAppVite {
 
 function functionCreateElectronAppWindowsStyle {
   functionDrawLogo
-    # Check internet connection before proceeding
-    if (-not (Test-InternetConnection)) {
-      Write-Host "No internet connection. Please connect to the internet and try again." -ForegroundColor Red
-      return
-    }
+  # Check internet connection before proceeding
+  Write-Host "Checking for network connection..." -ForegroundColor Yellow
+  start-sleep -Seconds 1
+  if (-not (Test-InternetConnection)) {
+    Write-Host "No internet connection. Please connect to the internet and try again." -ForegroundColor Red
+    return
+  }
+  functionDrawLogo
   Write-Host "Creating a new Electron.js app with Windows Style..." -ForegroundColor Yellow
   Write-Host "[-] Step 1: Name of the project"-ForegroundColor Yellow
   Write-Host "[ ] Step 2: Creating project directory and initialise npm"-ForegroundColor DarkGray
