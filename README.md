@@ -6,15 +6,21 @@ This PowerShell script is designed to simplify the process of setting up and cre
   The homepage of the Electron.js Setup script.
 </p>
 
+<br/>
+
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-setup.png)
 <p align="center">
   A screenshot of the a basic electron app creation.
 </p>
 
+<br/>
+
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-created.png)
 <p align="center">
   A screenshot of the basic electron app created.
 </p>
+
+<br/>
 
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-windows.png)
 <p align="center">
