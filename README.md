@@ -1,7 +1,9 @@
 # Electron.js Setup Script `v1.7`
+
 This PowerShell script is designed to simplify the process of setting up and creating new Electron.js projects. Whether you're a beginner or an experienced developer, this script automates the installation of essential tools, initializes your project, and generates the necessary files to get you started quickly. It also provides options to create different types of Electron apps, including a basic Electron app, a Vite-based app, and a Windows-style app.
 
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-home.png)
+
 <p align="center">
   The homepage of the Electron.js Setup script.
 </p>
@@ -9,6 +11,7 @@ This PowerShell script is designed to simplify the process of setting up and cre
 <br/>
 
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-setup.png)
+
 <p align="center">
   A screenshot of the a basic electron app creation.
 </p>
@@ -16,6 +19,7 @@ This PowerShell script is designed to simplify the process of setting up and cre
 <br/>
 
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-created.png)
+
 <p align="center">
   A screenshot of the basic electron app created.
 </p>
@@ -23,6 +27,7 @@ This PowerShell script is designed to simplify the process of setting up and cre
 <br/>
 
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-windows.png)
+
 <p align="center">
   A screenshot of a windows styled electron app.
 </p>
