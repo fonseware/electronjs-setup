@@ -99,7 +99,7 @@ $localVersionFilePath = ".\version.txt"
 
 # URL of the remote version.txt file on GitHub
 #$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
-$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
+$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/main/version.txt"
 
 
 # Function to get the local version from version.txt
