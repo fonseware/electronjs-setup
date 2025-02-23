@@ -18,10 +18,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-$host.UI.RawUI.WindowTitle = "Electron.js Setup"
-$host.UI.RawUI.ForegroundColor = "White"
-$currentFolder = $PSScriptRoot
-Clear-Host
+param(
+  [Parameter(Mandatory = $false)]
+  [string]$ProjectName,
+    
+  [Parameter(Mandatory = $false)]
+  [string]$ProjectLocation
+)
 
 function functionDrawLogo2 {
   Clear-Host
@@ -33,7 +36,7 @@ function functionDrawLogo2 {
 |  __/ |  __/ (__| |_| | | (_) | | | |_ | \__ \ \__ \  __/ |_| |_| | |_) |
  \___|_|\___|\___|\__|_|  \___/|_| |_(_)/ |___/ |___/\___|\__|\__,_| .__/ 
                                       |__/                         |_|    
-_____________________[  WELCOME TO ELECTRON.JS SETUP  ]________________________`n
+______________________[ WELCOME TO ELECTRON.JS SETUP ]_________________________`n
 "@ -ForegroundColor Green
 }
 
@@ -59,6 +62,7 @@ function Test-InternetConnection {
   try {
     $url = "https://www.google.com"
     $response = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing -TimeoutSec 5
+    $response
     return $true
   }
   catch {
@@ -74,18 +78,18 @@ developer, this script automates the installation of essential tools,
 initializes your project, and generates the necessary files to get you started 
 quickly. It also provides options to create different types of Electron apps, 
 including a basic Electron app, a Vite-based app, and a Windows-style app.`n
- - The script checks for and installs essential tools like Chocolatey, Node.js, 
-   and Visual Studio Code if they are not already installed on your system.`n
- - Automatically creates a new Electron.js project directory, initializes npm, 
-   and installs Electron as a dependency.`n
- - Generates essential files such as main.js, index.html, and package.json 
-   with default configurations, saving you time on boilerplate code.`n
- - Multiple Project Templates: Basic Electron App, Vite-based Electron App,
-   Windows-style Electron App`n
- - Automatically opens the newly created project in Visual Studio Code, allowing 
-   you to start coding immediately.`n
- - Provides error logging and user-friendly prompts to guide you through the 
-   setup process, even if something goes wrong.
+  - The script checks for and installs essential tools like Chocolatey, Node.js, 
+    and Visual Studio Code if they are not already installed on your system.`n
+  - Automatically creates a new Electron.js project directory, initializes npm, 
+    and installs Electron as a dependency.`n
+  - Generates essential files such as main.js, index.html, and package.json 
+    with default configurations, saving you time on boilerplate code.`n
+  - Multiple Project Templates: Basic Electron App, Vite-based Electron App,
+    Windows-style Electron App`n
+  - Automatically opens the newly created project in Visual Studio Code, allowing 
+    you to start coding immediately.`n
+  - Provides error logging and user-friendly prompts to guide you through the 
+    setup process, even if something goes wrong.
 "@ -ForegroundColor Cyan
   functionDrawLine
 }
@@ -95,7 +99,7 @@ $localVersionFilePath = ".\version.txt"
 
 # URL of the remote version.txt file on GitHub
 #$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
-$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/main/version.txt"
+$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
 
 
 # Function to get the local version from version.txt
@@ -193,11 +197,11 @@ By continuing, you agree to install these prerequisites on your system.
  - Chocolatey: https://docs.chocolatey.org/en-us/information/legal/
  - Visual Studio Code: https://code.visualstudio.com/license
  - Node.js: https://github.com/nodejs/node/blob/main/LICENSE
-"@ -ForegroundColor Yellow
+"@ -ForegroundColor Blue
   functionDrawLine
-  Write-Host "`nPress [Enter] to accept and continue or type '1' to go to main menu."
+  Write-Host "`nPress [Enter] to accept and continue or type '98' to go to main menu."
   $inputValue = Read-Host "Enter your choice"
-  if ($inputValue -eq "1") {
+  if ($inputValue -eq "98") {
     return
   } 
   if ($inputValue -eq "") {} else {
@@ -376,9 +380,9 @@ function functionCreateElectronAppDefault {
   Write-Host "Save Location: $projectLocation\"
   Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
   functionDrawLine
-  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu, to start over..."
+  Write-Host "`nPress [Enter] to continue or type '98' to go to main menu, to start over..."
   $inputValue = Read-Host "Enter your choice"
-  if ($inputValue -eq "1") {
+  if ($inputValue -eq "98") {
     return
   } 
   if ($inputValue -eq "") {} else {
@@ -581,15 +585,171 @@ app.on('window-all-closed', () => {`
   write-host "`nThank you for using the Electron.js Setup script." -ForegroundColor Green
 }
 
+function functionDrawCmdLogo {
+  Clear-Host
+  Write-Host @"
+Electron.js Setup v$localVersion (via command line)
+------------------------------------------------------------
+"@ -ForegroundColor Green
+}
+
+function functionDrawCmdLogo2 {
+  Write-Host @"
+------------------------------------------------------------
+fonseware
+"@ -ForegroundColor Green
+}
+
+function functionCreateElectronAppDefault2 {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$projectName,
+      
+    [Parameter(Mandatory = $false)]
+    [string]$projectLocation
+  )
+  functionDrawCmdLogo
+  try {
+    if (-not [string]::IsNullOrWhiteSpace($projectName)) {
+      $projectName = $projectName -replace ' ', '-'
+    }
+    else {
+      Write-Host "Project name cannot be empty. Please try again." -ForegroundColor Red
+      return
+    }
+    $defaultLocation = "C:\Users\$env:USERNAME\source\repos"
+    if ([string]::IsNullOrWhiteSpace($projectLocation)) {
+      $projectLocation = $defaultLocation
+      Write-Host """ProjectLocation"" param not specified.`nThe project will be saved in default location: $projectLocation\" -ForegroundColor Yellow
+    }
+    if (Test-Path "$projectLocation\$projectName") {
+      Write-Host "A folder already exists at this location. Please enter a different path." -ForegroundColor Red
+      return
+    }
+    Write-Host "Your project save location: $projectLocation\$projectName\" -ForegroundColor Yellow
+    $fullPath = Join-Path -Path $projectLocation -ChildPath $projectName
+    mkdir $fullPath | Out-Null
+    Set-Location -Path $fullPath
+    npm init -y > $null 2>&1
+    Write-Host "[*] Project directory created and initialised npm."-ForegroundColor Green
+    #Write-host "Error log saved at: $projectLocation\$projectName\error.log" -ForegroundColor Yellow
+    npm install --save-dev electron > $null 2> error.log
+    Write-Host "[*] Installed Electron to project."-ForegroundColor Green
+    $mainJsContent = @"
+const { app, BrowserWindow } = require('electron');
+
+function createWindow() {
+    const win = new BrowserWindow({
+        width: 800,
+        height: 600,
+        webPreferences: {
+            nodeIntegration: true,
+        },
+    });
+
+    win.loadFile('index.html');
+}
+
+app.whenReady().then(() => {
+    createWindow();
+
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+});
+
+app.on('window-all-closed', () => {`
+    if (process.platform !== 'darwin') app.quit();
+});
+"@
+    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "main.js") -Value $mainJsContent
+    Write-Host "[*] Created main.js file."-ForegroundColor Green
+    $htmlContent = @"
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electron Starter App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 40px;
+        background-color: #f0f0f0;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #2e3c4d;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+      }
+      h2 {
+        color: #3a506b;
+        margin-bottom: 30px;
+      }
+      p {
+        color: #555;
+        line-height: 1.6;
+        margin: 15px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Welcome to Electron!</h1>
+      <h2>You've successfully set up your Electron application</h2>
+
+      <p>
+        Start building your application by modifying the
+        <code>index.html</code> file and adding your custom functionality.
+      </p>
+      <p>
+        This basic template includes everything you need to begin developing
+        your cross-platform desktop app.
+      </p>
+      <p>
+        Check out the Electron documentation to explore all the powerful
+        features available!
+      </p>
+    </div>
+  </body>
+</html>
+"@
+    Set-Content -Path (Join-Path -Path $fullPath -ChildPath "index.html") -Value $htmlContent
+    Write-Host "[*] Created index.html file."-ForegroundColor Green
+    $jsonPath = Join-Path -Path $fullPath -ChildPath "package.json"
+    $jsonContent = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
+    $jsonContent.main = "main.js"
+    $jsonContent.scripts = @{ "start" = "electron ." }
+    $jsonContent | ConvertTo-Json -Compress | Set-Content -Path $jsonPath
+    Write-Host "[*] Updated package.json file."-ForegroundColor Green
+    Set-Location -Path $fullPath
+    code .
+    Write-Host "[*] Opening project in Visual Studio Code."-ForegroundColor Green
+    npm start > $null 2>&1
+    Write-Host "[*] Electron app built."-ForegroundColor Green
+    write-host "Your Electron app has been created successfully!" -ForegroundColor Green
+    write-host "Thank you for using the Electron.js Setup script." -ForegroundColor Green  
+  }
+  catch {
+    <#Do this if a terminating exception happens#>
+    Write-Host "An error occurred while creating the project!" -ForegroundColor Red
+  }
+}
+
 function functionCreateElectronAppVite {
   functionDrawLogo
   Write-Host "You are about to run a script, outside the scope of this setup.`n" -ForegroundColor Yellow
   Write-Host "    npm create @quick-start/electron@latest`n" -ForegroundColor Cyan
   Write-Host "If you want to exit while running the above script, press [Escape]." -ForegroundColor Yellow
   functionDrawLine
-  Write-Host "Press [Enter] to start the script or type '1' to go to main menu."
+  Write-Host "Press [Enter] to start the script or type '98' to go to main menu."
   $inputValue = Read-Host "Enter your choice"
-  if ($inputValue -eq "1") {
+  if ($inputValue -eq "98") {
     return
   } 
   if ($inputValue -eq "") {} else {
@@ -652,9 +812,9 @@ function functionCreateElectronAppWindowsStyle {
   Write-Host "Save Location: $projectLocation\"
   Write-Host "Project Location: $projectLocation\$projectName\" -ForegroundColor Yellow
   functionDrawLine
-  Write-Host "`nPress [Enter] to continue or type '1' to go to main menu, to start over..."
+  Write-Host "`nPress [Enter] to continue or type '98' to go to main menu, to start over..."
   $inputValue = Read-Host "Enter your choice"
-  if ($inputValue -eq "1") {
+  if ($inputValue -eq "98") {
     return
   } 
   if ($inputValue -eq "") {} else {
@@ -1397,11 +1557,14 @@ document.onreadystatechange = () => {
 
 function functionAboutScript {
   functionDrawLogo
-  Write-Host " - About this script`nScript version: $localVersion`n" -ForegroundColor Cyan
-  Write-Host " - This script is designed to help you create a new Electron.js app quickly and easily." -ForegroundColor Yellow
-  Write-Host " - It will guide you through the process of setting up a new Electron.js project." -ForegroundColor Yellow
-  Write-Host " - You can choose to create a basic Electron.js app, an Electron.js app using`nVite templates, or a Windows 10 style Electron.js app." -ForegroundColor Yellow
-  Write-Host " - This script will also check for the necessary prerequisites and install them if needed." -ForegroundColor Yellow
+  Write-Host "[Main Menu > About this script]`nScript version: $localVersion`n" -ForegroundColor Cyan
+  Write-Host "GitHub Repo: https://github.com/fonseware/electronjs-setup" -ForegroundColor Cyan
+  Write-Host "Author: Shannon Fonseka (fonseware)" -ForegroundColor Cyan
+  Write-Host "License: MIT" -ForegroundColor Cyan
+  Write-Host "`n  - This script is designed to help you create a new Electron.js app quickly and easily." -ForegroundColor Yellow
+  Write-Host "  - It will guide you through the process of setting up a new Electron.js project." -ForegroundColor Yellow
+  Write-Host "  - You can choose to create a basic Electron.js app, an Electron.js app using`n    Vite templates, or a Windows 10 style Electron.js app." -ForegroundColor Yellow
+  Write-Host "  - This script will also check for the necessary prerequisites and install them if needed." -ForegroundColor Yellow
   Write-Host @"
     `nSoftware License Agreement
     Electron.js Setup is licensed under the MIT License.
@@ -1411,11 +1574,10 @@ function functionAboutScript {
         3. You may distribute the script to others.
         4. You may not hold the author liable for any damages.
         5. You must include the original license in all copies.
-        
+
     Full license: https://raw.githubusercontent.com/fonseware/electronjs-setup/refs/heads/main/LICENSE
 "@ -ForegroundColor Magenta
-  Write-Host "`n(c) 2025 fonseware" -ForegroundColor Cyan
-  Write-Host "GitHub Repo: https://github.com/fonseware/electronjs-setup" -ForegroundColor Cyan
+  Write-Host "`n(c) 2025 fonseware. All rights reserved." -ForegroundColor Cyan
 }
 
 function functionMainMenuChoices {
@@ -1425,21 +1587,15 @@ function functionMainMenuChoices {
 
   switch ($Choice) {
     "1" { functionCheckForPrerequisites }
-    "2" { functionCreateElectronAppDefault }
-    "3" { functionCreateElectronAppVite }
-    "4" { functionCreateElectronAppWindowsStyle }
-    "5" { functionAboutScript }
-    "6" { 
+    "2" { functionShowMenuCreateProjectOptions }
+    "3" { functionAboutScript }
+    "99" { 
       functionDrawLogo
-      Write-Host "Exiting script... Goodbye!" -ForegroundColor Yellow
-      write-host "Thank you for using, and tell a friend about this script...  :)`n" -ForegroundColor Green
+      Write-Host "[Main Menu > Exit]`n" -ForegroundColor Cyan
+      write-host "Thank you for using this script...  :)`n" -ForegroundColor Green
       Pause
       Clear-Host
-      exit
-      exit
-      exit
-      exit
-      exit
+      Exit
     }
     default { 
       functionDrawLogo
@@ -1448,23 +1604,69 @@ function functionMainMenuChoices {
   }
 }
 
+function functionCreateProjectMenuChoices {
+  param (
+    [string]$Choice
+  )
+
+  switch ($Choice) {
+    "1" { functionCreateElectronAppDefault }
+    "2" { functionCreateElectronAppVite }
+    "3" { functionCreateElectronAppWindowsStyle }
+    "98" { return }
+    default { 
+      functionDrawLogo
+      Write-Host "Invalid choice, please try again!" -ForegroundColor Red
+    }
+  }
+}
+
+
+function functionShowMenuCreateProjectOptions {
+  functionDrawLogo
+  Write-Host "[Main Menu > Create a new project..]`n" -ForegroundColor Cyan
+  Write-Host "  1. Create a basic Electron.js app" -ForegroundColor Cyan
+  Write-Host "  2. Create an Electron.js app using Vite templates" -ForegroundColor Cyan
+  Write-Host "  3. Create an Electron.js app with Windows 10 style" -ForegroundColor Cyan
+  Write-Host "`n  More project templates coming soon..." -ForegroundColor DarkGray
+  Write-Host "`n  98. Back to main menu" -ForegroundColor Cyan
+  #Write-Host "_______________________________________________________________________________`n"
+  $varUserChoice = Read-Host "`nSelect an option (1-3)"
+  functionCreateProjectMenuChoices -Choice $varUserChoice
+}
+
 function functionShowMainMenu {
-  Write-Host @"
-.--------------------------------------------------------------------------.
-| Note: An active internet connection is required for this script to work. |
-'--------------------------------------------------------------------------'`n
-"@ -ForegroundColor Yellow
   Write-Host "[Main Menu]`n" -ForegroundColor Cyan
-  Write-Host " 1. Check & install for prerequisites" -ForegroundColor Cyan
-  Write-Host " 2. Create a new basic Electron.js app (default)" -ForegroundColor Cyan
-  Write-Host " 3. Create a new Electron.js app using Vite templates" -ForegroundColor Cyan
-  Write-Host " 4. Create a new Windows 10 style Electron.js app" -ForegroundColor Cyan
-  Write-Host " 5. About this script" -ForegroundColor Cyan
-  Write-Host " 6. Exit" -ForegroundColor Cyan
-  Write-Host "`n(c) 2025 fonseware" -ForegroundColor Cyan
+  Write-Host "  1. Install prerequisites" -ForegroundColor Cyan
+  Write-Host "  2. Create a new project..." -ForegroundColor Cyan
+  Write-Host "  3. About this script" -ForegroundColor Cyan
+  Write-Host "`n  99. Exit" -ForegroundColor Cyan
+  Write-Host @"
+
+.----------------------------------------------------------------------------.
+| Note: * An active internet connection is required for this script to work. |
+|       * If you encounter any issues or would like to suggest a feature,    |
+|         please submit them on the issues section of the GitHub repo.       |
+'----------------------------------------------------------------------------'
+"@ -ForegroundColor Yellow
+  Write-Host "`n(c) 2025 fonseware. All rights reserved." -ForegroundColor Cyan
 }
 
 # Run the version comparison
+$host.UI.RawUI.WindowTitle = "Electron.js Setup"
+$host.UI.RawUI.ForegroundColor = "White"
+# After Compare-Versions and before the main loop
+if (-not [string]::IsNullOrEmpty($ProjectName)) {
+  # Argument mode - skip menu
+  $localVersion = Get-LocalVersion
+  $localVersion = $localVersion.Trim()
+  functionCreateElectronAppDefault2 -projectName $ProjectName -projectLocation $ProjectLocation
+  functionDrawCmdLogo2
+  #Pause
+  #Clear-Host
+  exit
+}
+$currentFolder = $PSScriptRoot
 functionDrawLogo2
 functionShowInfoScreen
 Pause
@@ -1476,9 +1678,8 @@ while ($true) {
   Set-Location $currentFolder
   functionDrawLogo
   functionShowMainMenu
-  $varUserChoice = Read-Host "`nSelect an option (1-6)"
+  $varUserChoice = Read-Host "`nSelect an option (1-3)"
   functionMainMenuChoices -Choice $varUserChoice
-  #functionDrawLogo
   Write-Host "`nPress [Enter] to go to main menu..." -ForegroundColor Magenta
   Read-Host  # Waits for user to press Enter before showing menu again
 }

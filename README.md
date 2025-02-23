@@ -1,4 +1,4 @@
-# Electron.js Setup Script `v1.7`
+# Electron.js Setup Script `v1.8`
 
 This PowerShell script is designed to simplify the process of setting up and creating new Electron.js projects. Whether you're a beginner or an experienced developer, this script automates the installation of essential tools, initializes your project, and generates the necessary files to get you started quickly. It also provides options to create different types of Electron apps, including a basic Electron app, a Vite-based app, and a Windows-style app.
 
@@ -43,16 +43,30 @@ This PowerShell script is designed to simplify the process of setting up and cre
   - Windows-style Electron App: Creates a modern Windows 10/11-style Electron app with custom window controls and a sleek UI.
 - Automatically opens the newly created project in Visual Studio Code, allowing you to start coding immediately.
 - Provides error logging and user-friendly prompts to guide you through the setup process, even if something goes wrong.
+- Command line approach to create apps even more faster.
 
 ## Running the Setup
 
 After cloning the repository, navigate to the project folder in your terminal and run the setup script to automatically configure your environment:
+
+**A quicker method:**: You can now create Electron.js app, even more quickly using command line params. 
+```
+.\setup.ps1 -ProjectName "my-app" -ProjectLocation "C:\projects"
+
+```
+
+```
+powershell -ExecutionPolicy Bypass -File setup.ps1 -ProjectName "test-app" -ProjectLocation "C:\projects"
+
+```
+
 **For Windows**: Run `setup.ps1` in Command Prompt (requires Git installed):
 
 ```cmd
 git clone https://github.com/fonseware/electronjs-setup.git
 cd electronjs-setup
 powershell -ExecutionPolicy Bypass -File setup.ps1
+
 ```
 
 **For Windows**: Run `setup.ps1` in PowerShell (requires Git installed):
@@ -61,6 +75,7 @@ powershell -ExecutionPolicy Bypass -File setup.ps1
 git clone https://github.com/fonseware/electronjs-setup.git
 cd electronjs-setup
 ./setup.ps1
+
 ```
 
 **Alternative method**:
