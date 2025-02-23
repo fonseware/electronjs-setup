@@ -53,7 +53,8 @@ function functionDrawLine {
 function Test-InternetConnection {
   try {
     $url = "https://www.google.com"
-    #$response = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing -TimeoutSec 5
+    $response = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing -TimeoutSec 5
+    $response
     return $true
   }
   catch {
@@ -90,7 +91,7 @@ $localVersionFilePath = ".\version.txt"
 
 # URL of the remote version.txt file on GitHub
 #$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
-$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/main/version.txt"
+$remoteVersionUrl = "https://raw.githubusercontent.com/fonseware/electronjs-setup/test/version.txt"
 
 
 # Function to get the local version from version.txt
@@ -1426,6 +1427,7 @@ function functionMainMenuChoices {
     "3" { functionAboutScript }
     "99" { 
       functionDrawLogo
+      Write-Host "[Main Menu > Exit]`n" -ForegroundColor Cyan
       write-host "Thank you for using this script...  :)`n" -ForegroundColor Green
       Pause
       Clear-Host
@@ -1485,7 +1487,6 @@ function functionShowMainMenu {
 | Note: * An active internet connection is required for this script to work. |
 |       * If you encounter any issues or would like to suggest a feature,    |
 |         please submit them on the issues section of the GitHub repo.       |
-|       * Check the about section for project details.                       |
 '----------------------------------------------------------------------------'
 "@ -ForegroundColor Yellow
   Write-Host "`n(c) 2025 fonseware. All rights reserved." -ForegroundColor Cyan
