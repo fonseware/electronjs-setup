@@ -49,17 +49,6 @@ This PowerShell script is designed to simplify the process of setting up and cre
 
 After cloning the repository, navigate to the project folder in your terminal and run the setup script to automatically configure your environment:
 
-**A quicker method:**: You can now create Electron.js app, even more quickly using command line params. 
-```
-.\setup.ps1 -ProjectName "my-app" -ProjectLocation "C:\projects"
-
-```
-
-```
-powershell -ExecutionPolicy Bypass -File setup.ps1 -ProjectName "test-app" -ProjectLocation "C:\projects"
-
-```
-
 **For Windows**: Run `setup.ps1` in Command Prompt (requires Git installed):
 
 ```cmd
@@ -76,6 +65,12 @@ git clone https://github.com/fonseware/electronjs-setup.git
 cd electronjs-setup
 ./setup.ps1
 
+```
+
+**A quicker method:** You can now create Electron.js app, even more quickly using command line params. 
+
+```powershell
+powershell -ExecutionPolicy Bypass -File setup.ps1 -ProjectName "test-app" -ProjectLocation "C:\projects"
 ```
 
 **Alternative method**:
