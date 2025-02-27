@@ -70,16 +70,17 @@ To run the quick method:
 :: run these commands in Command Prompt
 git clone https://github.com/fonseware/electronjs-setup.git
 cd electronjs-setup
-powershell -ExecutionPolicy Bypass -File setup.ps1
+powershell -ExecutionPolicy Bypass -File setup.ps1 -ProjectName "test-app" -ProjectLocation "C:\projects"
 
 ```
+
 To run the normal wizard:
 
 ```batch
 :: run these commands in Command Prompt
 git clone https://github.com/fonseware/electronjs-setup.git
 cd electronjs-setup
-powershell -ExecutionPolicy Bypass -File setup.ps1 -ProjectName "test-app" -ProjectLocation "C:\projects"
+powershell -ExecutionPolicy Bypass -File setup.ps1
 
 ```
 
