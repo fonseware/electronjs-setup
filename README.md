@@ -1,5 +1,8 @@
 # Electron.js Setup Script
 
+>[!Note]
+> A new revamped version of this script is on it's way. More additional set of features and bug fixes.
+
 This PowerShell script is designed to simplify the process of setting up and creating new Electron.js projects. Whether you're a beginner or an experienced developer, this script automates the installation of essential tools, initializes your project, and generates the necessary files to get you started quickly. It also provides options to create different types of Electron apps, including a basic Electron app, a Vite-based app, and a Windows-style app.
 
 ![image](https://github.com/shannonfonseka/shannonfonseka/blob/main/res/electronjs-home.png)
@@ -42,6 +45,14 @@ This PowerShell script is designed to simplify the process of setting up and cre
 ## Running the script
 
 After cloning the repository, navigate to the project folder in your terminal and run the setup script to automatically configure your project. This script works for Windows operating systems only. Make sure you have git installed in your computer. If you are installing prerequisites, run the powershell terminal as an administrator.
+
+>[!Important]
+> When checking for prerequisites, please run this script as an administrator. (this issue will be fixed in a future update.)
+
+>[!Important]
+> For Windows users starting up for the first time, please enable PowerShell script running in your computer. By going to `Settings > System > Developer Options`, and turn on `Developer Mode`. and then in that same settings page, check for `PowerShell > "Change execution policy to allow local PowerShell scripts to run without signing. Require signing for remote scripts."` to on.
+> Restart your pc.
+> For your security, after running the script turn off this setting and disable Developer Options if needed.
 
 ### In PowerShell
 
